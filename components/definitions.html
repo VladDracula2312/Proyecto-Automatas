@@ -1,0 +1,145 @@
+<section id="definiciones">
+  <div class="contenedor">
+    <span class="seccion-label">§ Formalización Matemática — Jerarquía de Chomsky</span>
+    <h2 class="seccion-titulo">Definiciones Formales del Ecosistema Multimodelo</h2>
+    <p class="seccion-descripcion">
+      Cada componente del sistema se formaliza como una tupla matemática rigurosa.
+      Los dos autómatas finitos (AFD) controlan la sesión en los extremos; la Red de Petri gestiona la concurrencia asíncrona del canal;
+      el Autómata a Pila (AFP) valida la estructura sintáctica anidada de los segmentos; y la Máquina de Turing (MT) computa y cifra los datos en cinta.
+    </p>
+
+    <!-- Fila 1: AFDs -->
+    <div class="grid-2col">
+
+      <!-- Card FSM Cliente -->
+      <div class="card-def cliente">
+        <div class="card-label">Tipo 3 — Autómata Finito Determinista (AFD)</div>
+        <h3 class="card-titulo cliente">FSM Cliente — A<sub>C</sub></h3>
+        <div class="formula">A<sub>C</sub> = (Q<sub>C</sub>, Σ, δ<sub>C</sub>, CERRADO, {ESTABLECIDO})</div>
+        <table class="tabla-t">
+          <thead>
+            <tr>
+              <th>Estado actual</th>
+              <th>Evento / Símbolo</th>
+              <th>Estado siguiente</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>CERRADO</td><td><code>iniciar_conexion</code></td><td>SYN-ENVIADO</td><td>Emitir SYN a buffer</td></tr>
+            <tr><td>SYN-ENVIADO</td><td><code>recibir_SYN-ACK</code></td><td>ESTABLECIDO</td><td>Emitir ACK final</td></tr>
+            <tr><td>SYN-ENVIADO</td><td><code>timeout</code></td><td>CERRADO</td><td>Retransmitir / abortar</td></tr>
+            <tr><td>ESTABLECIDO</td><td><code>iniciar_cierre</code></td><td>FIN-ESPERA</td><td>Emitir FIN</td></tr>
+            <tr><td>FIN-ESPERA</td><td><code>recibir_FIN-ACK</code></td><td>CERRADO</td><td>Emitir ACK final</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Card FSM Servidor -->
+      <div class="card-def servidor">
+        <div class="card-label">Tipo 3 — Autómata Finito Determinista (AFD)</div>
+        <h3 class="card-titulo servidor">FSM Servidor — A<sub>S</sub></h3>
+        <div class="formula">A<sub>S</sub> = (Q<sub>S</sub>, Σ, δ<sub>S</sub>, ESCUCHA, {ESTABLECIDO})</div>
+        <table class="tabla-t">
+          <thead>
+            <tr>
+              <th>Estado actual</th>
+              <th>Evento / Símbolo</th>
+              <th>Estado siguiente</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>ESCUCHA</td><td><code>recibir_SYN</code></td><td>SYN-RECIBIDO</td><td>Emitir SYN-ACK</td></tr>
+            <tr><td>ESCUCHA</td><td><code>recibir_SYN</code> (OFF)</td><td>ESCUCHA</td><td>Emitir RST de rechazo</td></tr>
+            <tr><td>SYN-RECIBIDO</td><td><code>recibir_ACK</code></td><td>ESTABLECIDO</td><td>Sesión activa</td></tr>
+            <tr><td>SYN-RECIBIDO</td><td><code>timeout_srv</code></td><td>ESCUCHA</td><td>Retransmitir SYN-ACK</td></tr>
+            <tr><td>ESTABLECIDO</td><td><code>recibir_FIN</code></td><td>CERRANDO</td><td>Emitir FIN-ACK</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /grid-2col -->
+
+    <!-- Fila 2: Red de Petri del Canal -->
+    <div style="margin-top:1.5rem" class="card-def" style="border-top-color: var(--c-canal);">
+      <div class="card-label">Sistemas Concurrentes — Red de Petri con Arcos Inhibidores</div>
+      <h3 class="card-titulo" style="color:var(--c-canal)">N<sub>canal</sub> — Modelo de Plazas, Transiciones y Bloqueo</h3>
+      <div class="formula">
+        N<sub>canal</sub> = (P, T, F, W, M₀) &nbsp;|&nbsp;
+        P = {p<sub>buf_C</sub>, p<sub>SYN</sub>, p<sub>buf_S</sub>, p<sub>SYNACK</sub>, p<sub>buf_C2</sub>, p<sub>ACK</sub>, p<sub>perdido</sub>}
+      </div>
+      <p style="font-size:0.85rem;color:var(--c-texto-dim);margin-top:0.5rem">
+        El marcado inicial es M₀(p) = 0 ∀p ∈ P. Las transiciones
+        <code>enviar_SYN</code>, <code>entregar_SYN</code>, <code>enviar_SYNACK</code>,
+        <code>entregar_SYNACK</code>, <code>enviar_ACK</code>, <code>entregar_ACK</code>
+        modelan la asincronía del canal. La plaza <code>p_perdido</code> con su arco inhibidor
+        garantiza que M(p<sub>perdido</sub>) ≥ 1 inhabilite <code>entregar_SYN</code>, simulando pérdida física en el medio.
+      </p>
+    </div>
+
+    <!-- Fila 3: Autómata a Pila (AFP) y Máquina de Turing (MT) -->
+    <div class="grid-2col" style="margin-top:1.5rem">
+
+      <!-- Card AFP -->
+      <div class="card-def" style="border-top-color:#e36209">
+        <div class="card-label" style="color:#ffab70">Tipo 2 — Autómata con Pila (AFP / PDA)</div>
+        <h3 class="card-titulo" style="color:#ffab70">AFP Validador — M<sub>AFP</sub></h3>
+        <div class="formula" style="color:#ffab70">
+          M<sub>AFP</sub> = (Q<sub>P</sub>, Σ, Γ, δ<sub>P</sub>, q₀, Z₀, {q<sub>acc</sub>})
+        </div>
+        <p style="font-size:0.82rem;color:var(--c-texto-dim);margin-bottom:0.75rem">
+          Modela el parser sintáctico de la Capa de Aplicación (L7). Valida que la trama transmitida en el stream TCP
+          cumpla con gramáticas libres de contexto de delimitadores balanceados: <code>L = { {ⁿ w }ⁿ | n ≥ 1 }</code>.
+        </p>
+        <table class="tabla-t">
+          <thead>
+            <tr>
+              <th>(Estado, Símbolo, Tope)</th>
+              <th>(Estado Siguiente, Reemplazo)</th>
+              <th>Operación Pila</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>(q₀, "{", Z₀)</code></td><td><code>(q₁, "{Z₀}")</code></td><td>PUSH "{"</td></tr>
+            <tr><td><code>(q₁, "SYN", "{")</code></td><td><code>(q₁, "SYN{Z₀}")</code></td><td>PUSH "SYN"</td></tr>
+            <tr><td><code>(q₁, "ACK", "SYN")</code></td><td><code>(q₁, "{Z₀}")</code></td><td>POP "SYN"</td></tr>
+            <tr><td><code>(q₁, "}", "{")</code></td><td><code>(q₂, "Z₀")</code></td><td>POP "{"</td></tr>
+            <tr><td><code>(q₂, "ε", Z₀)</code></td><td><code>(q<sub>acc</sub>, "Z₀")</code></td><td>ACEPTACIÓN ✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Card Máquina de Turing -->
+      <div class="card-def" style="border-top-color:#bc8cff">
+        <div class="card-label" style="color:#d2a8ff">Tipo 0 — Máquina de Turing (MT)</div>
+        <h3 class="card-titulo" style="color:#d2a8ff">MT Criptográfica — M<sub>MT</sub></h3>
+        <div class="formula" style="color:#d2a8ff">
+          M<sub>MT</sub> = (Q<sub>MT</sub>, Σ, Γ<sub>cinta</sub>, δ<sub>MT</sub>, q₀, B, {q<sub>halt</sub>})
+        </div>
+        <p style="font-size:0.82rem;color:var(--c-texto-dim);margin-bottom:0.75rem">
+          Modela el motor de cómputo universal y cifrado de extremo a extremo. Procesa la cinta celda a celda transformando
+          el texto plano de control en firmas criptográficas verificables antes de inyectar tokens a la Red de Petri.
+        </p>
+        <table class="tabla-t">
+          <thead>
+            <tr>
+              <th>(Estado actual, Leído)</th>
+              <th>(Estado Siguiente, Escribe, Mov)</th>
+              <th>Efecto en Cinta</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>(q₀, "B")</code></td><td><code>(q₁, "B", R)</code></td><td>Inicia lectura</td></tr>
+            <tr><td><code>(q₁, "S")</code></td><td><code>(q₂, "S*", R)</code></td><td>Cifra byte 1 ('S')</td></tr>
+            <tr><td><code>(q₂, "Y")</code></td><td><code>(q₃, "Y*", R)</code></td><td>Cifra byte 2 ('Y')</td></tr>
+            <tr><td><code>(q₃, "N")</code></td><td><code>(q₄, "N*", R)</code></td><td>Cifra byte 3 ('N')</td></tr>
+            <tr><td><code>(q₄, "B")</code></td><td><code>(q<sub>halt</sub>, "#", S)</code></td><td>PARADA: Firma sellada ✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /grid-2col -->
+
+  </div>
+</section>

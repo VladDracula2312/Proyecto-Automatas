@@ -1,0 +1,406 @@
+<section id="simulador">
+<div class="contenedor">
+  <span class="seccion-label">§ Simulación Multimodelo Interactiva</span>
+  <h2 class="seccion-titulo">Diagrama Principal y Simulador</h2>
+  <p class="seccion-descripcion">Selecciona un escenario y avanza paso a paso. Los tokens viajan por el canal en tiempo real, mientras los AFDs, el Autómata a Pila y la Máquina de Turing reaccionan en simultáneo.</p>
+  <div style="margin-bottom:1rem">
+    <span class="escenarios-label">Escenario de simulación</span>
+    <div class="escenarios-grid">
+      <button class="btn-escenario activo" data-esc="normal"       data-tip="normal">Handshake Normal</button>
+      <button class="btn-escenario"        data-esc="perdida"      data-tip="perdida">Pérdida de Paquete</button>
+      <button class="btn-escenario"        data-esc="rst"          data-tip="rst">Rechazo (RST)</button>
+      <button class="btn-escenario"        data-esc="simultaneous" data-tip="simultaneous">Apertura Simultánea</button>
+      <button class="btn-escenario"        data-esc="masiva"       data-tip="masiva">Flujo N Paquetes (Auto)</button>
+    </div>
+  </div>
+  <div class="sim-layout">
+    <div class="diagrama-wrapper">
+      <svg id="diagrama-principal" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono">
+        <defs>
+          <marker id="arr-c"   markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#388bfd"/></marker>
+          <marker id="arr-s"   markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#3fb950"/></marker>
+          <marker id="arr-n"   markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#d29922"/></marker>
+          <marker id="arr-int" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#bc8cff"/></marker>
+          <marker id="arr-err" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#f85149"/></marker>
+          <marker id="inh"     markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><circle cx="4" cy="4" r="3.5" fill="none" stroke="#f85149" stroke-width="1.2"/></marker>
+          <filter id="glow-c" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="glow-s" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="glow-n" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="glow-t" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+
+        <!-- ZONA BACKGROUNDS -->
+        <rect x="8"   y="38" width="172" height="450" rx="8" fill="rgba(56,139,253,0.04)"  stroke="rgba(56,139,253,0.18)"  stroke-width="1"/>
+        <rect x="188" y="38" width="624" height="450" rx="8" fill="rgba(210,153,34,0.04)"  stroke="rgba(210,153,34,0.15)"  stroke-width="1"/>
+        <rect x="820" y="38" width="172" height="450" rx="8" fill="rgba(63,185,80,0.04)"   stroke="rgba(63,185,80,0.15)"   stroke-width="1"/>
+
+        <text x="94"  y="28" text-anchor="middle" font-size="8.5" fill="#388bfd" letter-spacing="1.5" opacity="0.9"
+              class="zona-label" data-tip="fsm-c">FSM CLIENTE (Aᶜ)</text>
+        <text x="500" y="28" text-anchor="middle" font-size="8.5" fill="#d29922" letter-spacing="1.5" opacity="0.9"
+              class="zona-label" data-tip="canal">CANAL — RED DE PETRI (Nᶜ)</text>
+        <text x="906" y="28" text-anchor="middle" font-size="8.5" fill="#3fb950" letter-spacing="1.5" opacity="0.9"
+              class="zona-label" data-tip="fsm-s">FSM SERVIDOR (Aˢ)</text>
+
+        <!-- ══ FSM CLIENTE ══ -->
+        <!-- inicio -->
+        <line x1="30" y1="88" x2="60" y2="88" stroke="#388bfd" stroke-width="1.5" marker-end="url(#arr-c)"/>
+        <!-- CERRADO -->
+        <circle id="ec-cerrado" cx="94" cy="88" r="24" fill="#060b14" stroke="#388bfd" stroke-width="1.8"/>
+        <text x="94" y="84"  text-anchor="middle" font-size="7.5" fill="#e6edf3">CER-</text>
+        <text x="94" y="95"  text-anchor="middle" font-size="7.5" fill="#e6edf3">RADO</text>
+        <!-- SYN-ENVIADO -->
+        <circle id="ec-synenv" cx="94" cy="208" r="24" fill="#060b14" stroke="#388bfd" stroke-width="1.8"/>
+        <text x="94" y="204" text-anchor="middle" font-size="7.5" fill="#e6edf3">SYN-</text>
+        <text x="94" y="216" text-anchor="middle" font-size="7.5" fill="#e6edf3">ENV</text>
+        <!-- ESTABLECIDO (aceptación) -->
+        <circle id="ec-estab" cx="94" cy="338" r="26" fill="#060b14" stroke="#388bfd" stroke-width="1.8"/>
+        <circle          cx="94" cy="338" r="20" fill="none"   stroke="#388bfd" stroke-width="0.9" opacity="0.5"/>
+        <text x="94" y="334" text-anchor="middle" font-size="7"   fill="#e6edf3">ESTAB-</text>
+        <text x="94" y="346" text-anchor="middle" font-size="7"   fill="#e6edf3">LECIDO</text>
+        <!-- FIN-ESPERA -->
+        <circle id="ec-fin" cx="94" cy="450" r="24" fill="#060b14" stroke="#388bfd" stroke-width="1.8"/>
+        <text x="94" y="446" text-anchor="middle" font-size="7.5" fill="#e6edf3">FIN-</text>
+        <text x="94" y="458" text-anchor="middle" font-size="7.5" fill="#e6edf3">ESP</text>
+
+        <!-- FSM-C: flechas de transición -->
+        <line x1="94" y1="112" x2="94" y2="184" stroke="#388bfd" stroke-width="1.2" marker-end="url(#arr-c)"/>
+        <rect x="97" y="139" width="74" height="13" fill="#060b14" rx="3"/>
+        <text x="134" y="150" text-anchor="middle" font-size="6.5" fill="#388bfd" class="flecha-hover" data-tip="fsm-c-init">iniciar_conexion</text>
+
+        <line x1="94" y1="232" x2="94" y2="312" stroke="#388bfd" stroke-width="1.2" marker-end="url(#arr-c)"/>
+        <rect x="97" y="260" width="78" height="13" fill="#060b14" rx="3"/>
+        <text x="136" y="271" text-anchor="middle" font-size="6.5" fill="#388bfd" class="flecha-hover" data-tip="fsm-c-rcvsack">rcv_SYN-ACK</text>
+
+        <line x1="94" y1="364" x2="94" y2="426" stroke="#388bfd" stroke-width="1.2" marker-end="url(#arr-c)"/>
+        <rect x="97" y="388" width="68" height="13" fill="#060b14" rx="3"/>
+        <text x="131" y="399" text-anchor="middle" font-size="6.5" fill="#388bfd" class="flecha-hover" data-tip="fsm-c-close">iniciar_cierre</text>
+
+        <!-- timeout (curva izq) -->
+        <path d="M72,208 Q38,208 38,148 Q38,88 70,88" fill="none" stroke="#f85149" stroke-width="1.1" stroke-dasharray="5,2.5" marker-end="url(#arr-err)"/>
+        <text x="18" y="152" text-anchor="middle" font-size="6.5" fill="#f85149" transform="rotate(-90,18,148)" class="flecha-hover" data-tip="fsm-c-to">timeout</text>
+
+        <!-- ══ RED DE PETRI: ROW 1 — SYN (y=88) C→S ══ -->
+        <!-- p_buf_C -->
+        <circle id="pn-bufc" cx="260" cy="88" r="20" fill="#060b14" stroke="#d29922" stroke-width="1.6"/>
+        <text x="260" y="118" text-anchor="middle" font-size="7" fill="#d29922">p_buf_C</text>
+        <circle id="tk-bufc" cx="260" cy="88" r="7" fill="#f78166" opacity="0" filter="url(#glow-t)"/>
+
+        <!-- arco p_buf_C → t_env_SYN -->
+        <line x1="280" y1="88" x2="348" y2="88" stroke="#d29922" stroke-width="1.2" marker-end="url(#arr-n)"/>
+
+        <!-- t_env_SYN -->
+        <rect id="tr-env-syn" x="350" y="78" width="52" height="20" rx="3" fill="#1e2a1e" stroke="#d29922" stroke-width="1.3"/>
+        <text x="376" y="92" text-anchor="middle" font-size="7" fill="#d29922" font-weight="600">env_SYN</text>
+
+        <!-- arco t_env_SYN → p_SYN -->
+        <line x1="402" y1="88" x2="448" y2="88" stroke="#d29922" stroke-width="1.2" marker-end="url(#arr-n)"/>
+
+        <!-- p_SYN -->
+        <circle id="pn-syn" cx="470" cy="88" r="20" fill="#060b14" stroke="#d29922" stroke-width="1.6"/>
+        <text x="470" y="118" text-anchor="middle" font-size="7" fill="#d29922">p_SYN</text>
+        <circle id="tk-syn" cx="470" cy="88" r="7" fill="#f78166" opacity="0" filter="url(#glow-t)"/>
+
+        <!-- arco p_SYN → t_ent_SYN -->
+        <line x1="490" y1="88" x2="548" y2="88" stroke="#d29922" stroke-width="1.2" marker-end="url(#arr-n)"/>
+
+        <!-- t_ent_SYN -->
+        <rect id="tr-ent-syn" x="550" y="78" width="52" height="20" rx="3" fill="#1e2a1e" stroke="#d29922" stroke-width="1.3"/>
+        <text x="576" y="92" text-anchor="middle" font-size="7" fill="#d29922" font-weight="600">ent_SYN</text>
+
+        <!-- arco t_ent_SYN → p_buf_S -->
+        <line x1="602" y1="88" x2="648" y2="88" stroke="#d29922" stroke-width="1.2" marker-end="url(#arr-n)"/>
+
+        <!-- p_buf_S -->
+        <circle id="pn-bufs" cx="670" cy="88" r="20" fill="#060b14" stroke="#d29922" stroke-width="1.6"/>
+        <text x="670" y="118" text-anchor="middle" font-size="7" fill="#d29922">p_buf_S</text>
+        <circle id="tk-bufs" cx="670" cy="88" r="7" fill="#f78166" opacity="0" filter="url(#glow-t)"/>
+
+        <!-- integración p_buf_C ← FSM-C -->
+        <line x1="118" y1="88" x2="238" y2="88" stroke="#bc8cff" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr-int)"/>
+        <text x="178" y="80" text-anchor="middle" font-size="6" fill="#bc8cff" class="flecha-hover" data-tip="int-coloca-syn">coloca token</text>
+
+        <!-- integración p_buf_S → FSM-S (ESCUCHA) -->
+        <line x1="690" y1="88" x2="876" y2="88" stroke="#bc8cff" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr-int)"/>
+        <text x="783" y="80" text-anchor="middle" font-size="6" fill="#bc8cff" class="flecha-hover" data-tip="int-entrega-syn">entrega SYN</text>
+
+        <!-- ══ ROW 2 — SYN-ACK (y=248) S→C ══ -->
+        <!-- p_SYNACK -->
+        <circle id="pn-synack" cx="530" cy="248" r="20" fill="#060b14" stroke="#d29922" stroke-width="1.6"/>
+        <text x="530" y="278" text-anchor="middle" font-size="7" fill="#d29922">p_SYNACK</text>
+        <circle id="tk-synack" cx="530" cy="248" r="7" fill="#f78166" opacity="0" filter="url(#glow-t)"/>
+
+        <!-- t_env_SACK (el servidor coloca el SYNACK) -->
+        <rect id="tr-env-sack" x="630" y="238" width="60" height="20" rx="3" fill="#1e2a1e" stroke="#d29922" stroke-width="1.3"/>
+        <text x="660" y="252" text-anchor="middle" font-size="6.5" fill="#d29922" font-weight="600">env_SYNACK</text>
+
+        <!-- arco t_env_SACK → p_SYNACK -->
+        <line x1="630" y1="248" x2="550" y2="248" stroke="#d29922" stroke-width="1.2" marker-end="url(#arr-n)"/>
+
+        <!-- t_ent_SACK (el cliente recibe el SYNACK) -->
+        <rect id="tr-ent-sack" x="350" y="238" width="60" height="20" rx="3" fill="#1e2a1e" stroke="#d29922" stroke-width="1.3"/>
+        <text x="380" y="252" text-anchor="middle" font-size="6.5" fill="#d29922" font-weight="600">ent_SYNACK</text>
+
+        <!-- arco p_SYNACK → t_ent_SACK -->
+        <line x1="510" y1="248" x2="410" y2="248" stroke="#d29922" stroke-width="1.2" marker-end="url(#arr-n)"/>
+
+        <!-- p_buf_C2 (recepción lado cliente) -->
+        <circle id="pn-bufc2" cx="260" cy="248" r="20" fill="#060b14" stroke="#d29922" stroke-width="1.6"/>
+        <text x="260" y="278" text-anchor="middle" font-size="7" fill="#d29922">p_buf_C₂</text>
+        <circle id="tk-bufc2" cx="260" cy="248" r="7" fill="#f78166" opacity="0" filter="url(#glow-t)"/>
+
+        <!-- arco t_ent_SACK → p_buf_C2 -->
+        <line x1="350" y1="248" x2="280" y2="248" stroke="#d29922" stroke-width="1.2" marker-end="url(#arr-n)"/>
+
+        <!-- integración FSM-S (SYN-REC) → t_env_SACK -->
+        <line x1="882" y1="248" x2="690" y2="248" stroke="#bc8cff" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr-int)"/>
+        <text x="786" y="240" text-anchor="middle" font-size="6" fill="#bc8cff" class="flecha-hover" data-tip="int-coloca-sack">coloca SYNACK</text>
+
+        <!-- integración p_buf_C2 → FSM-C -->
+        <line x1="240" y1="248" x2="120" y2="220" stroke="#bc8cff" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr-int)"/>
+        <text x="172" y="228" text-anchor="middle" font-size="6" fill="#bc8cff" class="flecha-hover" data-tip="int-entrega-sack">entrega</text>
+
+        <!-- ══ ROW 3 — ACK (y=368) C→S ══ -->
+        <!-- t_env_ACK -->
+        <rect id="tr-env-ack" x="290" y="358" width="52" height="20" rx="3" fill="#1e2a1e" stroke="#d29922" stroke-width="1.3"/>
+        <text x="316" y="372" text-anchor="middle" font-size="7" fill="#d29922" font-weight="600">env_ACK</text>
+
+        <!-- arco t_env_ACK → p_ACK -->
+        <line x1="342" y1="368" x2="418" y2="368" stroke="#d29922" stroke-width="1.2" marker-end="url(#arr-n)"/>
+
+        <!-- p_ACK -->
+        <circle id="pn-ack" cx="440" cy="368" r="20" fill="#060b14" stroke="#d29922" stroke-width="1.6"/>
+        <text x="440" y="398" text-anchor="middle" font-size="7" fill="#d29922">p_ACK</text>
+        <circle id="tk-ack" cx="440" cy="368" r="7" fill="#f78166" opacity="0" filter="url(#glow-t)"/>
+
+        <!-- arco p_ACK → t_ent_ACK -->
+        <line x1="460" y1="368" x2="538" y2="368" stroke="#d29922" stroke-width="1.2" marker-end="url(#arr-n)"/>
+
+        <!-- t_ent_ACK -->
+        <rect id="tr-ent-ack" x="540" y="358" width="52" height="20" rx="3" fill="#1e2a1e" stroke="#d29922" stroke-width="1.3"/>
+        <text x="566" y="372" text-anchor="middle" font-size="7" fill="#d29922" font-weight="600">ent_ACK</text>
+
+        <!-- integración FSM-C → t_env_ACK -->
+        <line x1="116" y1="350" x2="288" y2="368" stroke="#bc8cff" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr-int)"/>
+        <text x="195" y="352" text-anchor="middle" font-size="6" fill="#bc8cff" class="flecha-hover" data-tip="int-coloca-ack">coloca ACK</text>
+
+        <!-- integración t_ent_ACK → FSM-S (ESTABLECIDO) -->
+        <line x1="592" y1="368" x2="874" y2="368" stroke="#bc8cff" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr-int)"/>
+        <text x="733" y="360" text-anchor="middle" font-size="6" fill="#bc8cff" class="flecha-hover" data-tip="int-entrega-ack">entrega ACK</text>
+
+        <!-- p_perdido (inhibidor) -->
+        <circle id="pn-perdido" cx="470" cy="458" r="17" fill="#060b14" stroke="#f85149" stroke-width="1.3" stroke-dasharray="4,2"/>
+        <text x="470" y="483" text-anchor="middle" font-size="6.5" fill="#f85149">p_perdido</text>
+        <circle id="tk-perdido" cx="470" cy="458" r="6" fill="#f85149" opacity="0"/>
+        <!-- arco inhibidor → t_ent_SYN (línea vertical con círculo final) -->
+        <path d="M470,441 Q470,350 576,108" fill="none" stroke="#f85149" stroke-width="0.9" stroke-dasharray="4,3" marker-end="url(#inh)"/>
+        <text x="508" y="300" text-anchor="middle" font-size="6" fill="#f85149" transform="rotate(-78,508,300)" class="flecha-hover" data-tip="int-inhibidor">inhibidor</text>
+
+        <!-- ══ FSM SERVIDOR ══ -->
+        <!-- inicio -->
+        <line x1="970" y1="88" x2="940" y2="88" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr-s)"/>
+        <!-- ESCUCHA -->
+        <circle id="es-escucha" cx="906" cy="88" r="24" fill="#060b14" stroke="#3fb950" stroke-width="1.8"/>
+        <text x="906" y="92" text-anchor="middle" font-size="7.5" fill="#e6edf3">ESCUCHA</text>
+        <!-- SYN-RECIBIDO -->
+        <circle id="es-synrec" cx="906" cy="248" r="24" fill="#060b14" stroke="#3fb950" stroke-width="1.8"/>
+        <text x="906" y="244" text-anchor="middle" font-size="7"   fill="#e6edf3">SYN-</text>
+        <text x="906" y="256" text-anchor="middle" font-size="7"   fill="#e6edf3">REC</text>
+        <!-- ESTABLECIDO servidor (aceptación) -->
+        <circle id="es-estab" cx="906" cy="368" r="26" fill="#060b14" stroke="#3fb950" stroke-width="1.8"/>
+        <circle           cx="906" cy="368" r="20" fill="none"   stroke="#3fb950" stroke-width="0.9" opacity="0.5"/>
+        <text x="906" y="364" text-anchor="middle" font-size="7"   fill="#e6edf3">ESTAB-</text>
+        <text x="906" y="376" text-anchor="middle" font-size="7"   fill="#e6edf3">LECIDO</text>
+        <!-- CERRANDO -->
+        <circle id="es-cerrando" cx="906" cy="458" r="24" fill="#060b14" stroke="#3fb950" stroke-width="1.8"/>
+        <text x="906" y="462" text-anchor="middle" font-size="7.5" fill="#e6edf3">CERR.</text>
+
+        <!-- FSM-S: flechas de transición -->
+        <line x1="906" y1="112" x2="906" y2="224" stroke="#3fb950" stroke-width="1.2" marker-end="url(#arr-s)"/>
+        <rect x="830" y="158" width="68" height="13" fill="#060b14" rx="3"/>
+        <text x="864" y="169" text-anchor="middle" font-size="6.5" fill="#3fb950" class="flecha-hover" data-tip="fsm-s-rcvsyn">rcv_SYN</text>
+
+        <line x1="906" y1="272" x2="906" y2="342" stroke="#3fb950" stroke-width="1.2" marker-end="url(#arr-s)"/>
+        <rect x="830" y="298" width="68" height="13" fill="#060b14" rx="3"/>
+        <text x="864" y="309" text-anchor="middle" font-size="6.5" fill="#3fb950" class="flecha-hover" data-tip="fsm-s-rcvack">rcv_ACK</text>
+
+        <line x1="906" y1="394" x2="906" y2="434" stroke="#3fb950" stroke-width="1.2" marker-end="url(#arr-s)"/>
+        <rect x="830" y="410" width="68" height="13" fill="#060b14" rx="3"/>
+        <text x="864" y="421" text-anchor="middle" font-size="6.5" fill="#3fb950" class="flecha-hover" data-tip="fsm-s-rcvfin">rcv_FIN</text>
+
+        <!-- timeout servidor (curva der) -->
+        <path d="M930,248 Q968,248 968,168 Q968,88 931,88" fill="none" stroke="#f85149" stroke-width="1.1" stroke-dasharray="5,2.5" marker-end="url(#arr-err)"/>
+        <text x="982" y="172" text-anchor="middle" font-size="6.5" fill="#f85149" transform="rotate(90,982,168)" class="flecha-hover" data-tip="fsm-s-to">t/o</text>
+      </svg>
+    </div>
+
+    <!-- Panel lateral -->
+    <div class="sim-panel">
+      <div class="estados-grid">
+        <div class="estado-box" id="box-cliente">
+          <span class="estado-label">FSM Cliente (AFD)</span>
+          <span class="estado-valor c" id="disp-cliente">CERRADO</span>
+        </div>
+        <div class="estado-box" id="box-servidor">
+          <span class="estado-label">FSM Servidor (AFD)</span>
+          <span class="estado-valor s" id="disp-servidor">ESCUCHA</span>
+        </div>
+      </div>
+      <div class="progreso-bar-wrap"><div class="progreso-bar-fill" id="barra-prog"></div></div>
+      <div class="paso-card">
+        <div class="paso-header">
+          <span class="paso-num" id="paso-num">Paso 0 / 7</span>
+          <span class="paso-formula-badge" id="paso-formula">M₀(p)=0 ∀p</span>
+        </div>
+        <div class="paso-titulo" id="paso-titulo">Estado Inicial</div>
+        <p class="paso-desc" id="paso-desc">Sistema en reposo. Marcado inicial M₀=0.</p>
+      </div>
+      <div class="paso-card" style="border-left-color:var(--c-token)">
+        <span class="estado-label" style="display:block;margin-bottom:.5rem">Tokens en N<sub>canal</sub> (Red de Petri)</span>
+        <div id="tokens-display" style="font-family:var(--mono);font-size:.78rem;color:var(--c-texto-dim);line-height:1.8">
+          Todas las plazas vacías
+        </div>
+      </div>
+      <div class="controles">
+        <button class="btn btn-reset" id="btn-reset">↺ Reset</button>
+        <button class="btn btn-prev"  id="btn-prev" disabled>← Ant.</button>
+        <button class="btn btn-next"  id="btn-next">Sig. →</button>
+      </div>
+      <!-- Panel Auto-Play (oculto por defecto) -->
+      <div id="panel-autoplay" class="panel-autoplay" style="display:none;">
+        <div class="autoplay-header">
+          <span class="autoplay-title">Auto-Play: Transmisión</span>
+          <div class="speed-slider-wrap">
+            <span style="font-size:0.65rem; color:#8b949e">Vel:</span>
+            <input type="range" id="slider-velocidad" min="1" max="5" value="1" step="1" style="width:50px; cursor:pointer;" title="Ajustar velocidad (1x a 5x)">
+            <span id="disp-velocidad" style="font-size:0.75rem; color:#e6edf3; font-weight:700; min-width:18px;">1x</span>
+          </div>
+        </div>
+
+        <div class="autoplay-controls-grid">
+          <div class="control-group">
+            <span class="control-label">Nº Paquetes</span>
+            <input type="number" id="input-n-paquetes" class="input-n-paquetes" value="5" min="1" max="50">
+          </div>
+          <div class="control-group">
+            <span class="control-label">Sentido</span>
+            <select id="select-direccion" class="input-n-paquetes">
+              <option value="cs">C ➔ S (Datos)</option>
+              <option value="sc">S ➔ C (Descarga)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:0.5rem; align-items:center; margin-top:1rem;">
+          <button class="btn" id="btn-auto-play" style="flex:1; background:rgba(63,185,80,0.1); border-color:rgba(63,185,80,0.4); color:#3fb950; font-weight:600;">▶ Iniciar Flujo</button>
+          <button class="btn" id="btn-auto-pause" style="flex:1; display:none; background:rgba(210,153,34,0.1); border-color:rgba(210,153,34,0.4); color:#d29922; font-weight:600;">⏸ Pausar</button>
+        </div>
+      </div>
+      <div class="consola-wrap">
+        <div class="consola-header">
+          <div class="consola-dot r"></div><div class="consola-dot y"></div><div class="consola-dot g"></div>
+          <span class="consola-titulo">tcp_multimodel_sim.log</span>
+        </div>
+        <div class="consola-body" id="consola-body">
+          <span class="log-line"><span class="log-time">[00]</span><span class="log-info"> SIM INIT — 4 Modelos de Autómatas Listos</span></span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /sim-layout -->
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <!-- SECCIÓN SIMULTÁNEA: JERARQUÍA DE CHOMSKY (AFP Tipo 2 & MT Tipo 0)         -->
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <div id="chomsky-section" class="chomsky-sim-section">
+    <div class="chomsky-header">
+      <span class="seccion-label" style="color:var(--c-acento)">§ Cómputo Simultáneo — Capas Superiores (L5-L7)</span>
+      <h3 style="font-size:1.4rem;font-weight:600;letter-spacing:-0.02em;margin-bottom:0.3rem">
+        Autómata con Pila (AFP) & Máquina de Turing (MT) en Acción
+      </h3>
+      <p style="color:var(--c-texto-dim);font-size:0.9rem">
+        Al mismo tiempo que los tokens recorren la Red de Petri y los AFDs cambian de estado, la 
+        <strong>Máquina de Turing (MT)</strong> procesa y cifra la carga útil en su cinta infinita, mientras el 
+        <strong>Autómata a Pila (AFP)</strong> valida en memoria LIFO la gramática sintáctica de delimitadores del payload.
+      </p>
+    </div>
+
+    <div class="chomsky-grid">
+      
+      <!-- CARD 1: AUTÓMATA A PILA (AFP) -->
+      <div class="chomsky-card afp-card" data-tip="afp-stack">
+        <div class="chomsky-card-head">
+          <div class="chomsky-card-title-wrap">
+            <span class="chomsky-badge afp">Tipo 2 · AFP / PDA</span>
+            <h4 class="chomsky-card-title" style="color:#ffab70">Validador Sintáctico LIFO</h4>
+          </div>
+          <div class="chomsky-status-group">
+            <span class="status-chip" id="disp-afp-estado" title="Estado de control">q₀</span>
+            <span class="status-chip op" id="disp-afp-op" title="Operación sobre la pila">NOOP</span>
+          </div>
+        </div>
+
+        <div class="formula-banner afp" id="disp-afp-formula">
+          δ(q₀, "{", Z₀) = (q₁, "{Z₀}")
+        </div>
+
+        <!-- Visualizador de Pila -->
+        <div class="stack-visual-wrapper">
+          <div class="stack-guide-label">
+            <span>Tope de Pila (Top)</span>
+            <span id="disp-afp-tope" style="color:#ffab70;font-weight:700">Tope: Z₀</span>
+          </div>
+          <div class="stack-column-outer">
+            <div class="stack-column" id="afp-stack-container">
+              <!-- Elementos de pila inyectados dinámicamente por JS -->
+              <div class="stack-item z0">Z₀ (Fondo)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chomsky-desc-box" id="disp-afp-desc">
+          Pila en reposo con símbolo base Z₀. Esperando inicio de trama de aplicación.
+        </div>
+      </div>
+
+      <!-- CARD 2: MÁQUINA DE TURING (MT) -->
+      <div class="chomsky-card mt-card" data-tip="mt-tape">
+        <div class="chomsky-card-head">
+          <div class="chomsky-card-title-wrap">
+            <span class="chomsky-badge mt">Tipo 0 · Máquina de Turing</span>
+            <h4 class="chomsky-card-title" style="color:#d2a8ff">Cómputo & Cifrado en Cinta</h4>
+          </div>
+          <div class="chomsky-status-group">
+            <span class="status-chip" id="disp-mt-estado" title="Estado de control MT">q₀</span>
+            <span class="status-chip head" id="disp-mt-pos" title="Posición del cabezal">Pos: 0</span>
+            <span class="status-chip op" id="disp-mt-action" title="Acción de cinta">R/W</span>
+          </div>
+        </div>
+
+        <div class="formula-banner mt" id="disp-mt-formula">
+          δ(q₀, "B") = (q₁, "B", R)
+        </div>
+
+        <!-- Visualizador de Cinta de Turing -->
+        <div class="tape-visual-wrapper">
+          <div class="tape-viewport">
+            <div class="tape-head-indicator" id="mt-head-indicator">▼</div>
+            <div class="tape-strip" id="mt-tape-container">
+              <!-- Celdas de la cinta inyectadas dinámicamente por JS -->
+            </div>
+          </div>
+          <div class="tape-legend">
+            <span>◄ Infinito Izq</span>
+            <span style="color:#d2a8ff;font-weight:600">Cabezal de Lectura/Escritura</span>
+            <span>Infinito Der ►</span>
+          </div>
+        </div>
+
+        <div class="chomsky-desc-box" id="disp-mt-desc">
+          Cabezal situado en celda 0. Cinta cargada con símbolos de control listos para transformar.
+        </div>
+      </div>
+
+    </div><!-- /chomsky-grid -->
+  </div><!-- /chomsky-section -->
+
+</div>
+</section>

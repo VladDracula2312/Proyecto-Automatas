@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diagrama 100% — TCP Handshake Petri Net</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--c-fondo);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      .diagrama-full-layout {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      /* Override specific dimensions for this view */
+      .diagrama-full-layout svg {
+        width: 100%;
+        max-width: 1400px;
+        height: auto;
+        max-height: 90vh;
+        filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.4));
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav-sticky">
+      <div class="contenedor nav-inner">
+        <span class="nav-logo">tcp::petri_sim</span>
+        <ul class="nav-links">
+          <li><a href="index.html">← Volver al Simulador</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="diagrama-full-layout" id="diagrama-container">
+      <!-- El JS inyectará aquí el SVG para no duplicar código -->
+    </div>
+
+    <!-- Script de tooltips -->
+    <script src="tooltips.js"></script>
+    <script>
+      // Cargar dinámicamente el SVG desde simulator-ui.html para evitar duplicación
+      fetch("components/simulator-ui.html")
+        .then((res) => res.text())
+        .then((html) => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, "text/html");
+          const svg = doc.querySelector("svg");
+          if (svg) {
+            // Removemos el token animado ya que aquí es estático
+            const token = svg.querySelector("#token-viajero");
+            if (token) token.remove();
+
+            document.getElementById("diagrama-container").appendChild(svg);
+
+            // Inicializar los tooltips una vez inyectado el SVG
+            initTooltips();
+          }
+        });
+    </script>
+  </body>
+</html>

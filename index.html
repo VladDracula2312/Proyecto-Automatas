@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Simulador interactivo de verificación formal del TCP Three-Way Handshake mediante Autómatas Finitos (AFD), Redes de Petri, Autómata a Pila (AFP) y Máquinas de Turing (MT) en simultáneo.">
+    <meta name="keywords" content="Teoría de Autómatas, AFD, AFN, Redes de Petri, Autómata a Pila, Máquina de Turing, Jerarquía de Chomsky, TCP Handshake">
+    <title>TCP Multimodelo — AFD, Petri, AFP y Turing</title>
+
+    <!-- Google Fonts: IBM Plex -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+
+    <!-- Estilos principales -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- Fondo animado de partículas -->
+    <canvas id="canvas-fondo" aria-hidden="true"></canvas>
+
+    <!-- Contenedor raíz donde main.js inyecta los componentes -->
+    <div id="app">
+        <div class="loading-screen" id="loading-screen">
+            <div class="loading-logo">
+                <div class="loading-icon">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="24" cy="24" r="22" stroke="#388bfd" stroke-width="2" stroke-dasharray="4 2"/>
+                        <circle cx="24" cy="24" r="8" fill="#388bfd" opacity="0.3"/>
+                        <circle cx="24" cy="24" r="4" fill="#388bfd"/>
+                    </svg>
+                </div>
+                <span class="loading-texto">Inicializando Simulador Multimodelo</span>
+                <div class="loading-barra">
+                    <div class="loading-barra-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de tooltips global -->
+    <script src="tooltips.js"></script>
+    <!-- Script principal (módulo ES6) -->
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>

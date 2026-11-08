@@ -1,0 +1,86 @@
+<section id="propiedades">
+  <div class="contenedor">
+    <span class="seccion-label">§ Análisis Formal y Jerarquía de Chomsky</span>
+    <h2 class="seccion-titulo">Propiedades Verificables del Modelo Multimodelo</h2>
+    <p class="seccion-descripcion">
+      Propiedades matemáticas rigurosas que satisface el modelo compuesto (AFD + Red de Petri + AFP + MT),
+      expresadas en lógica temporal (CTL), teoría de lenguajes formales y teoría de la computabilidad.
+    </p>
+
+    <table class="tabla-props">
+      <thead>
+        <tr>
+          <th>Propiedad / Modelo</th>
+          <th>Definición Formal</th>
+          <th>En el contexto del Sistema</th>
+          <th>Nivel Chomsky</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-nombre">Ausencia de Deadlock (Petri + AFD)</td>
+          <td class="prop-formula">¬∃M : ∀t ∈ T, t no habilitada en M</td>
+          <td>Ningún paquete o sesión queda en interbloqueo indefinido sin progresar o abortar con RST/Timeout.</td>
+          <td><span class="badge" style="background:rgba(210,153,34,0.15);color:#d29922;border:1px solid rgba(210,153,34,0.4)">Concurrente</span></td>
+          <td><span class="badge badge-ok">Verificable</span></td>
+        </tr>
+        <tr>
+          <td class="prop-nombre">Acotación del Canal (k-Boundedness)</td>
+          <td class="prop-formula">∃k : M(p) ≤ k ∀M alcanzable, ∀p ∈ P</td>
+          <td>Los buffers de red no sufren desbordamiento (k=1 para canales semi-dúplex en paso a paso).</td>
+          <td><span class="badge" style="background:rgba(210,153,34,0.15);color:#d29922;border:1px solid rgba(210,153,34,0.4)">Red Petri</span></td>
+          <td><span class="badge badge-ok">Verificable</span></td>
+        </tr>
+        <tr>
+          <td class="prop-nombre">Vivacidad (Liveness)</td>
+          <td class="prop-formula">∀t ∈ T, ∀M alcanzable, ∃ σ : t habilitada</td>
+          <td>Todos los segmentos (SYN, SYNACK, ACK) pueden dispararse periódicamente en sesiones consecutivas.</td>
+          <td><span class="badge" style="background:rgba(56,139,253,0.15);color:#79c0ff;border:1px solid rgba(56,139,253,0.4)">Tipo 3 (AFD)</span></td>
+          <td><span class="badge badge-ok">Verificable</span></td>
+        </tr>
+        <tr>
+          <td class="prop-nombre">Alcanzabilidad de ESTABLECIDO</td>
+          <td class="prop-formula">E&lt;&gt; (A_C = ESTAB ∧ A_S = ESTAB)</td>
+          <td>Existe una traza válida σ que conduce a ambos extremos al estado de aceptación simultáneamente.</td>
+          <td><span class="badge" style="background:rgba(56,139,253,0.15);color:#79c0ff;border:1px solid rgba(56,139,253,0.4)">Lógica CTL</span></td>
+          <td><span class="badge badge-ok">UPPAAL ✓</span></td>
+        </tr>
+        <tr>
+          <td class="prop-nombre">Determinismo del AFP (DPDA Parsing)</td>
+          <td class="prop-formula">|δ(q, a, X)| + |δ(q, ε, X)| ≤ 1</td>
+          <td>El Autómata con Pila analiza la estructura anidada del payload en tiempo estrictamente lineal O(n).</td>
+          <td><span class="badge" style="background:rgba(227,98,9,0.15);color:#ffab70;border:1px solid rgba(227,98,9,0.4)">Tipo 2 (AFP)</span></td>
+          <td><span class="badge badge-ok">Lineal O(n)</span></td>
+        </tr>
+        <tr>
+          <td class="prop-nombre">Aceptación por Pila Vacía / Estado Final</td>
+          <td class="prop-formula">N(M_AFP) ∩ L(M_AFP) ≠ ∅</td>
+          <td>Al finalizar la transmisión de datos legítimos, la pila regresa a su estado base [Z₀] y alcanza q_acc.</td>
+          <td><span class="badge" style="background:rgba(227,98,9,0.15);color:#ffab70;border:1px solid rgba(227,98,9,0.4)">Tipo 2 (AFP)</span></td>
+          <td><span class="badge badge-ok">Verificable</span></td>
+        </tr>
+        <tr>
+          <td class="prop-nombre">Decidibilidad y Parada de la MT</td>
+          <td class="prop-formula">∀w ∈ Σ*, (q₀, w) ⊢* (q_halt, u _ v)</td>
+          <td>La Máquina de Turing de cifrado siempre alcanza q_halt para cualquier entrada acotada por longitud de MTU.</td>
+          <td><span class="badge" style="background:rgba(188,140,255,0.15);color:#d2a8ff;border:1px solid rgba(188,140,255,0.4)">Tipo 0 (MT)</span></td>
+          <td><span class="badge badge-ok">Decidible</span></td>
+        </tr>
+        <tr>
+          <td class="prop-nombre">Invariante de Sincronización Global</td>
+          <td class="prop-formula">Inv ≡ (A_C=ESTAB ∧ A_S=ESTAB) ⇒ MT=q_halt ∧ AFP=q_acc</td>
+          <td>La sesión TCP solo se considera operativa cuando los 4 modelos de cómputo convergen en estado coherente.</td>
+          <td><span class="badge" style="background:rgba(63,185,80,0.15);color:#3fb950;border:1px solid rgba(63,185,80,0.4)">Composición</span></td>
+          <td><span class="badge badge-ok">Simulado</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <div class="contenedor">
+    Teoría de la Computación — <span>TCP Handshake Multimodelo</span> — AFD + Redes de Petri + AFP + MT — 2026
+  </div>
+</footer>
