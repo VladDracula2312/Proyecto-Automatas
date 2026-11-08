@@ -1,0 +1,142 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[margin=2.54cm]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage{microtype}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=blue
+}
+
+\begin{document}
+
+% ─── PORTADA OFICIAL ───
+\begin{titlepage}
+    \centering
+    \vspace*{1.5cm}
+    {\large\bfseries AUTÓMATAS, REDES DE PETRI, PILA Y MÁQUINAS DE TURING: SINERGIA FORMAL PARA EL DISEÑO DE SISTEMAS COMPLEJOS MEDIANTE EL PROTOCOLO TCP\par}
+    
+    \vspace{2.5cm}
+    {\textbf{DOCENTE:}\par}
+    \vspace{0.3cm}
+    {\large\bfseries LUIS TOVAR GARRIDO\par}
+    
+    \vspace{2.5cm}
+    {\textbf{AUTORES:}\par}
+    \vspace{0.3cm}
+    {\large\bfseries DAVID ELÍAS BOSSIO PÉREZ\par}
+    {\large\bfseries JORGE ELIÉCER BUITRAGO SALAMANCA\par}
+    {\large\bfseries CAMILO ANDRÉS MIRANDA ACOSTA\par}
+    
+    \vfill
+    {\bfseries UNIVERSIDAD DE CARTAGENA\par}
+    {\bfseries FACULTAD DE INGENIERÍA\par}
+    {\bfseries PROGRAMA DE INGENIERÍA DE SISTEMAS\par}
+    {\bfseries CARTAGENA DE INDIAS\par}
+    {\bfseries 2026\par}
+    \vspace*{1cm}
+\end{titlepage}
+
+\onehalfspacing
+
+% ─── SECCIÓN 1 ───
+\section{Definición y Teoría de Autómatas}
+
+\subsection{Concepto y Origen}
+Un autómata es un modelo matemático abstracto de un sistema de cómputo que procesa una secuencia discreta de símbolos de entrada y, según su estado interno actual y las reglas de transición definidas, evoluciona hacia un nuevo estado. El término proviene del griego \textit{αὐτόματον} (\textit{autómaton}), que significa «actuar por sí mismo». Alan Turing formalizó en 1936 la primera noción de máquina abstracta universal con su Máquina de Turing. Posteriormente, Kleene (1951) y Rabin y Scott (1959) establecieron los fundamentos de los Autómatas Finitos.
+
+\subsection{Autómata Finito Determinista (AFD — Tipo 3)}
+Es el modelo base. Para cada estado y símbolo de entrada existe exactamente una transición definida (determinismo estricto). Su definición formal es:
+\begin{equation}
+\mathcal{A} = (Q, \Sigma, \delta, q_0, F)
+\end{equation}
+Donde:
+\begin{itemize}
+    \item $Q$: Conjunto finito no vacío de estados.
+    \item $\Sigma$: Alfabeto finito de entrada.
+    \item $\delta$: Función total de transición, $\delta : Q \times \Sigma \to Q$.
+    \item $q_0$: Estado inicial ($q_0 \in Q$).
+    \item $F$: Conjunto de estados de aceptación ($F \subseteq Q$).
+\end{itemize}
+
+\subsection{Autómata con Pila (AFP — Tipo 2)}
+El Autómata con Pila incorpora memoria auxiliar ilimitada con acceso LIFO (\textit{Last In, First Out}) y reconoce exactamente la familia de los Lenguajes Libres de Contexto (CFL):
+\begin{equation}
+M_{\text{AFP}} = (Q, \Sigma, \Gamma, \delta, q_0, Z_0, F)
+\end{equation}
+Donde $\Gamma$ es el alfabeto de la pila, $Z_0 \in \Gamma$ es el fondo de pila, y $\delta : Q \times (\Sigma \cup \{\epsilon\}) \times \Gamma \to \mathcal{P}_{\text{fin}}(Q \times \Gamma^*)$.
+
+\subsection{Máquina de Turing (MT — Tipo 0)}
+La Máquina de Turing formaliza el cómputo universal sobre una cinta infinita de casillas discretas con cabezal móvil bidireccional:
+\begin{equation}
+M_{\text{MT}} = (Q, \Sigma, \Gamma, \delta, q_0, B, F)
+\end{equation}
+Donde $\Sigma \subset \Gamma$, $B \in \Gamma \setminus \Sigma$ representa el símbolo blanco, y $\delta : Q \times \Gamma \to Q \times \Gamma \times \{L, R, S\}$.
+
+% ─── SECCIÓN 2 ───
+\section{Definición de Redes de Petri}
+
+\subsection{Origen y Formalismo}
+Propuestas por Carl Adam Petri (1962), las Redes de Petri modelan la causalidad, la concurrencia verdadera y los recursos distribuidos como un grafo bipartito:
+\begin{equation}
+N = (P, T, F, W, M_0)
+\end{equation}
+Donde $P$ es el conjunto finito de plazas, $T$ el conjunto finito de transiciones ($P \cap T = \emptyset$), $F \subseteq (P \times T) \cup (T \times P)$ los arcos orientados, $W$ la función de peso y $M_0$ el marcado inicial de tokens.
+
+Una transición $t \in T$ está habilitada si y solo si:
+\begin{equation}
+\forall p \in {}^\bullet t : M(p) \ge W(p, t)
+\end{equation}
+Su disparo atómico produce el nuevo marcado $M'(p) = M(p) - W(p, t) + W(t, p)$. En redes con arcos inhibidores ($p \multimap t$), la habilitación exige además que $M(p_{\text{inhibidora}}) = 0$.
+
+% ─── SECCIÓN 3 ───
+\section{Aplicación Seleccionada: Protocolo TCP Multimodelo}
+El Transmission Control Protocol (RFC 793) se modela de forma simultánea e integrada:
+\begin{itemize}
+    \item \textbf{AFD Cliente ($A_C$):} $(\{ \text{CERRADO, SYN-ENV, ESTAB, FIN-ESP} \}, \Sigma, \delta_C, \text{CERRADO}, \{ \text{ESTAB} \})$.
+    \item \textbf{AFD Servidor ($A_S$):} $(\{ \text{ESCUCHA, SYN-REC, ESTAB, CERRANDO} \}, \Sigma, \delta_S, \text{ESCUCHA}, \{ \text{ESTAB} \})$.
+    \item \textbf{Red de Petri ($N_{\text{canal}}$):} Plazas $p_{\text{buf\_C}}, p_{\text{SYN}}, p_{\text{buf\_S}}, p_{\text{SYNACK}}, p_{\text{buf\_C}_2}, p_{\text{ACK}}, p_{\text{perdido}}$ con arco inhibidor $p_{\text{perdido}} \multimap \text{ent\_SYN}$.
+    \item \textbf{Autómata con Pila ($M_{\text{AFP}}$):} Validador L7 de tramas balanceadas $\{^n w \}^n$ con operaciones PUSH/POP.
+    \item \textbf{Máquina de Turing ($M_{\text{MT}}$):} Cifrado de bytes en cinta ($S \to S^*, Y \to Y^*, N \to N^*$) hasta estado de parada $q_{\text{halt}}$.
+\end{itemize}
+
+\section{Propiedades Verificables}
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lXXl}
+\toprule
+\textbf{Propiedad} & \textbf{Expresión Matemática} & \textbf{Interpretación en el Protocolo} & \textbf{Estado} \\
+\midrule
+Ausencia de Deadlock & $\neg \exists M : \forall t \in T, \; t \text{ no habilitada}$ & No existen bloqueos no terminales. & Verificable \\
+Acotación ($k$-Boundedness) & $\exists k : M(p) \le k, \; \forall M$ & Buffers finitos sin desbordamiento. & Verificable \\
+Vivacidad (Liveness) & $\forall t, \forall M, \exists \sigma : t \text{ habilitada}$ & Eventos repetibles en sesiones sucesivas. & Verificable \\
+Alcanzabilidad ESTAB & $E\langle\rangle(A_C = \text{ESTAB} \land A_S = \text{ESTAB})$ & Handshake exitoso simultáneo. & UPPAAL $\checkmark$ \\
+Parsing Lineal AFP & $|\delta(q, a, X)| + |\delta(q, \epsilon, X)| \le 1$ & Análisis sintáctico en tiempo $O(n)$. & Lineal \\
+Parada de la MT & $\forall w, \; (q_0, w) \vdash^* (q_{\text{halt}}, u \underline{\alpha} v)$ & Cómputo acotado que siempre termina. & Decidible \\
+\bottomrule
+\end{tabularx}
+\caption{Propiedades formales verificables en el ecosistema compuesto.}
+\end{table}
+
+\section{Referencias}
+\begin{enumerate}
+    \item Alur, R., \& Dill, D. L. (1994). A theory of timed automata. \textit{Theoretical Computer Science}, 126(2), 183--235.
+    \item Chomsky, N. (1956). Three models for the description of language. \textit{IRE Transactions on Information Theory}, 2(3), 113--124.
+    \item Hopcroft, J. E., Motwani, R., \& Ullman, J. D. (2001). \textit{Introduction to Automata Theory, Languages, and Computation}. Addison-Wesley.
+    \item Murata, T. (1989). Petri nets: Properties, analysis and applications. \textit{Proceedings of the IEEE}, 77(4), 541--580.
+    \item Petri, C. A. (1962). \textit{Kommunikation mit Automaten}. Universität Bonn.
+    \item Postel, J. (1981). \textit{Transmission Control Protocol (RFC 793)}. IETF.
+    \item Turing, A. M. (1936). On computable numbers, with an application to the Entscheidungsproblem. \textit{Proc. London Math. Soc.}, 42, 230--265.
+\end{enumerate}
+
+\end{document}

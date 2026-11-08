@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Autómatas, Redes de Petri, Pila y Turing — Documentación Formal</title>
+  <style>
+    @page {
+      size: letter;
+      margin: 2.54cm;
+      @bottom-right {
+        content: counter(page);
+      }
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Times New Roman", Times, Georgia, serif;
+      font-size: 11pt;
+      line-height: 1.35;
+      color: #111;
+      background: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    .pagina-portada {
+      min-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      page-break-after: always;
+      padding: 2.5rem 0 1rem;
+    }
+
+    .titulo-portada {
+      font-size: 13pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      line-height: 1.45;
+      max-width: 90%;
+      margin-bottom: 2rem;
+    }
+
+    .bloque-docente {
+      margin-top: 2rem;
+    }
+
+    .etiqueta-cargo {
+      font-size: 11pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+
+    .nombre-persona {
+      font-size: 11.5pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      line-height: 1.6;
+    }
+
+    .bloque-autores {
+      margin-top: 2rem;
+    }
+
+    .escudo-wrapper {
+      margin: 2rem auto;
+      width: 140px;
+      height: 160px;
+    }
+
+    .bloque-institucional {
+      font-size: 11pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── ESTILOS DE CONTENIDO ─── */
+    .contenido {
+      text-align: justify;
+    }
+
+    h1, h2, h3, h4 {
+      color: #000;
+      font-weight: bold;
+      margin-top: 1.6rem;
+      margin-bottom: 0.5rem;
+      page-break-after: avoid;
+    }
+
+    h1 {
+      font-size: 13pt;
+      border-bottom: 1px solid #333;
+      padding-bottom: 0.2rem;
+      margin-top: 2.2rem;
+    }
+
+    h2 {
+      font-size: 11.5pt;
+      margin-top: 1.3rem;
+    }
+
+    h3 {
+      font-size: 11pt;
+      font-style: italic;
+      margin-top: 1rem;
+    }
+
+    p {
+      margin: 0.6rem 0;
+      text-indent: 1.25cm;
+    }
+
+    p.sin-sangria {
+      text-indent: 0;
+    }
+
+    ul, ol {
+      margin: 0.5rem 0 0.8rem 1.8cm;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 0.35rem;
+    }
+
+    /* Cajas de Definición Formal */
+    .caja-definicion {
+      background: #fbfbfb;
+      border-left: 3.5px solid #222;
+      border-top: 1px solid #e5e5e5;
+      border-right: 1px solid #e5e5e5;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 0.8rem 1.1rem;
+      margin: 1rem 0;
+      font-size: 10.5pt;
+      page-break-inside: avoid;
+    }
+
+    .caja-definicion .tit-def {
+      font-weight: bold;
+      margin-bottom: 0.3rem;
+      display: block;
+      color: #000;
+    }
+
+    .formula-linea {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 10.5pt;
+      font-weight: bold;
+      background: #f0f0f0;
+      padding: 0.35rem 0.7rem;
+      border-radius: 3px;
+      display: inline-block;
+      margin: 0.35rem 0;
+    }
+
+    /* Tablas Estilo Académico Booktabs */
+    table.tabla-academica {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.2rem 0;
+      font-size: 10pt;
+      page-break-inside: avoid;
+    }
+
+    table.tabla-academica th,
+    table.tabla-academica td {
+      padding: 0.45rem 0.6rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    table.tabla-academica thead th {
+      border-top: 1.5pt solid #000;
+      border-bottom: 1pt solid #000;
+      font-weight: bold;
+    }
+
+    table.tabla-academica tbody tr:last-child td {
+      border-bottom: 1.5pt solid #000;
+    }
+
+    table.tabla-academica tbody tr td {
+      border-bottom: 0.5pt solid #e0e0e0;
+    }
+
+    .salto-pagina {
+      page-break-after: always;
+    }
+
+    .diagrama-contenedor {
+      margin: 1.5rem 0;
+      text-align: center;
+      page-break-inside: avoid;
+    }
+
+    .diagrama-contenedor svg {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .referencias-lista p {
+      text-indent: -1.25cm;
+      margin-left: 1.25cm;
+      margin-bottom: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- PORTADA OFICIAL (IDÉNTICA A LA PÁGINA 1 DEL DOCUMENTO DE BASE)         -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="pagina-portada">
+    <div class="titulo-portada">
+      AUTÓMATAS, REDES DE PETRI, PILA Y MÁQUINAS DE TURING: SINERGIA FORMAL PARA EL DISEÑO DE SISTEMAS COMPLEJOS MEDIANTE EL PROTOCOLO TCP
+    </div>
+
+    <div class="bloque-docente">
+      <div class="etiqueta-cargo">DOCENTE:</div>
+      <div class="nombre-persona">LUIS TOVAR GARRIDO</div>
+    </div>
+
+    <div class="bloque-autores">
+      <div class="etiqueta-cargo">AUTORES:</div>
+      <div class="nombre-persona">DAVID ELÍAS BOSSIO PÉREZ</div>
+      <div class="nombre-persona">JORGE ELIÉCER BUITRAGO SALAMANCA</div>
+      <div class="nombre-persona">CAMILO ANDRÉS MIRANDA ACOSTA</div>
+    </div>
+
+    <!-- Escudo Vectorial Universidad de Cartagena -->
+    <div class="escudo-wrapper">
+      <svg viewBox="0 0 160 180" xmlns="http://www.w3.org/2000/svg" width="140" height="160">
+        <!-- Corona de Laurel Dorada/Verde -->
+        <g stroke="#1b4d1b" stroke-width="1.8" fill="#2d6a2d" opacity="0.9">
+          <path d="M 30,120 C 15,90 20,45 50,25 C 45,35 48,55 58,65 C 40,75 35,95 40,115 Z"/>
+          <path d="M 130,120 C 145,90 140,45 110,25 C 115,35 112,55 102,65 C 120,75 125,95 120,115 Z"/>
+          <path d="M 45,140 C 35,125 40,110 50,105 C 52,118 60,130 75,138 C 55,142 48,145 45,140 Z"/>
+          <path d="M 115,140 C 125,125 120,110 110,105 C 108,118 100,130 85,138 C 105,142 112,145 115,140 Z"/>
+        </g>
+        <!-- Lazo Inferior -->
+        <path d="M 60,145 Q 80,160 100,145 Q 80,152 60,145 Z" fill="#b8860b" stroke="#7a5805" stroke-width="1.5"/>
+        <path d="M 65,148 L 50,172 L 68,162 L 72,175 Z" fill="#b8860b" stroke="#7a5805"/>
+        <path d="M 95,148 L 110,172 L 92,162 L 88,175 Z" fill="#b8860b" stroke="#7a5805"/>
+        <!-- Escudo Central Heráldico -->
+        <path d="M 48,40 L 112,40 C 112,85 108,125 80,138 C 52,125 48,85 48,40 Z" fill="#0d1b2a" stroke="#d4af37" stroke-width="3"/>
+        <!-- Partición Interna -->
+        <path d="M 52,44 L 108,44 C 108,82 104,118 80,130 C 56,118 52,82 52,44 Z" fill="#8b0000" stroke="#d4af37" stroke-width="1.2"/>
+        <!-- Símbolos del Escudo: Antorcha de la Sabiduría y Espada -->
+        <line x1="80" y1="52" x2="80" y2="120" stroke="#ffd700" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M 72,55 Q 80,45 88,55 Q 80,40 72,55 Z" fill="#ff4500"/>
+        <line x1="62" y1="65" x2="98" y2="65" stroke="#ffd700" stroke-width="2.5"/>
+        <!-- Rayos de luz / estrellas -->
+        <circle cx="65" cy="85" r="3" fill="#ffd700"/>
+        <circle cx="95" cy="85" r="3" fill="#ffd700"/>
+        <circle cx="80" cy="102" r="3" fill="#ffd700"/>
+      </svg>
+    </div>
+
+    <div class="bloque-institucional">
+      UNIVERSIDAD DE CARTAGENA<br>
+      FACULTAD DE INGENIERÍA<br>
+      PROGRAMA DE INGENIERÍA DE SISTEMAS<br>
+      CARTAGENA DE INDIAS<br>
+      2026
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- CUERPO DE LA DOCUMENTACIÓN TÉCNICA                                      -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="contenido">
+
+    <h1>1. Definición y Teoría de Autómatas</h1>
+
+    <h2>1.1 Concepto y Origen</h2>
+    <p>
+      Un autómata es un modelo matemático abstracto de un sistema de cómputo que procesa una secuencia discreta de símbolos de entrada y, según su estado interno actual y las reglas de transición definidas, evoluciona hacia un nuevo estado. El término proviene del vocablo griego <em>αὐτόματον</em> (<em>autómaton</em>), que significa «actuar por sí mismo» o «espontáneo».
+    </p>
+    <p>
+      Alan Turing formalizó en 1936 la primera noción de máquina abstracta universal con su célebre Máquina de Turing. Posteriormente, Stephen Kleene (1951) y Michael Rabin y Dana Scott (1959) establecieron los fundamentos matemáticos de los Autómatas Finitos. Paralelamente, Noam Chomsky (1956) estructuró la jerarquía de lenguajes formales clasificando los modelos de acuerdo a su capacidad expresiva y tipo de memoria auxiliar.
+    </p>
+
+    <h2>1.2 Autómata Finito Determinista (AFD — Tipo 3)</h2>
+    <p>
+      Es el modelo base de control discreto. Para cada estado y símbolo de entrada existe exactamente una transición definida (determinismo estricto). Su definición formal es:
+    </p>
+
+    <div class="caja-definicion">
+      <span class="tit-def">Definición 1 — Autómata Finito Determinista (AFD)</span>
+      <span class="formula-linea">𝒜 = (Q, Σ, δ, q₀, F)</span><br>
+      Donde cada componente es un objeto matemático bien definido:
+      <ul>
+        <li><strong>Q:</strong> Conjunto finito no vacío de estados discretos. Cada estado representa una condición o modo de operación en un instante dado (ej. <em>Q = {CERRADO, SYN-ENVIADO, ESTABLECIDO}</em>).</li>
+        <li><strong>Σ (Sigma):</strong> Alfabeto finito de entrada (ej. <em>Σ = {SYN, ACK, FIN, RST}</em>).</li>
+        <li><strong>δ (delta):</strong> Función total de transición: <em>δ : Q × Σ → Q</em>. Dado el estado actual y el símbolo leído, devuelve unívocamente el siguiente estado.</li>
+        <li><strong>q₀:</strong> Estado inicial: <em>q₀ ∈ Q</em>. Estado en el que el autómata comienza su ejecución.</li>
+        <li><strong>F:</strong> Conjunto de estados de aceptación o finales: <em>F ⊆ Q</em>.</li>
+      </ul>
+    </div>
+
+    <p>
+      La función de transición extendida <em>δ* : Q × Σ* → Q</em> formaliza el procesamiento de cadenas completas de símbolos <em>w ∈ Σ*</em>:
+    </p>
+    <div class="caja-definicion">
+      <span class="tit-def">Definición 2 — Función de Transición Extendida</span>
+      <span class="formula-linea">δ*(q, ε) = q &nbsp;&nbsp;y&nbsp;&nbsp; δ*(q, wa) = δ(δ*(q, w), a)</span><br>
+      Donde ε representa la palabra vacía, <em>w ∈ Σ*</em> es una cadena y <em>a ∈ Σ</em> un símbolo individual. El lenguaje aceptado es <em>L(𝒜) = { w ∈ Σ* | δ*(q₀, w) ∈ F }</em>.
+    </div>
+
+    <h2>1.3 Autómata Finito No Determinista (AFND)</h2>
+    <p>
+      En el AFND, la función de transición puede mapear hacia múltiples estados sucesores simultáneos, e inclusive permite transiciones espontáneas sin consumir símbolos de entrada (transiciones ε):
+    </p>
+    <div class="caja-definicion">
+      <span class="tit-def">Definición 3 — Función de Transición AFND</span>
+      <span class="formula-linea">δ : Q × (Σ ∪ {ε}) → 2^Q</span><br>
+      Donde <em>2^Q</em> es el conjunto potencia de Q. Por el Teorema de Rabin-Scott (1959), todo AFND posee un AFD determinista equivalente con idéntico poder de reconocimiento: <em>L(AFND) = L(AFD)</em>.
+    </div>
+
+    <h2>1.4 Extensiones de los Autómatas Finitos</h2>
+    <table class="tabla-academica">
+      <thead>
+        <tr>
+          <th>Tipo de Autómata</th>
+          <th>Extensión y Capacidad Adicional</th>
+          <th>Aplicación en Ingeniería</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Autómata de Mealy</strong></td>
+          <td>La salida emitida depende del estado actual Y del símbolo de entrada consumido.</td>
+          <td>Diseño de controladores secuenciales síncronos y módems.</td>
+        </tr>
+        <tr>
+          <td><strong>Autómata de Moore</strong></td>
+          <td>La salida depende única y exclusivamente del estado interno actual.</td>
+          <td>Control de semáforos y unidades de control en microarquitecturas.</td>
+        </tr>
+        <tr>
+          <td><strong>Autómata Temporizado (TA)</strong></td>
+          <td>Incorpora relojes continuos con guardas e invariantes temporales (Alur & Dill, 1994).</td>
+          <td>Verificación de protocolos de tiempo real y timeouts críticos en UPPAAL.</td>
+        </tr>
+        <tr>
+          <td><strong>Autómata Híbrido (HA)</strong></td>
+          <td>Fusiona dinámica continua (EDOs) en estados con saltos discretos entre modos.</td>
+          <td>Sistemas Ciberfísicos (CPS), robótica y automoción.</td>
+        </tr>
+        <tr>
+          <td><strong>Statechart / HSM</strong></td>
+          <td>Jerarquía ortogonal con super-estados y concurrencia sintáctica (Harel, 1987).</td>
+          <td>Modelado en UML / SysML para sistemas aeroespaciales.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>1.5 Autómata con Pila (AFP / PDA — Tipo 2 en la Jerarquía de Chomsky)</h2>
+    <p>
+      El Autómata con Pila extiende al autómata finito dotándolo de una memoria de longitud arbitraria organizada bajo la disciplina LIFO (<em>Last In, First Out</em>). Reconoce exactamente la familia de los <strong>Lenguajes Libres de Contexto (CFL)</strong>.
+    </p>
+    <div class="caja-definicion">
+      <span class="tit-def">Definición 4 — Autómata con Pila (AFP)</span>
+      <span class="formula-linea">M_AFP = (Q, Σ, Γ, δ, q₀, Z₀, F)</span>
+      <ul>
+        <li><strong>Q:</strong> Conjunto finito de estados de control.</li>
+        <li><strong>Σ:</strong> Alfabeto finito de símbolos de entrada.</li>
+        <li><strong>Γ (Gamma):</strong> Alfabeto finito de la pila.</li>
+        <li><strong>δ:</strong> Función de transición <em>δ : Q × (Σ ∪ {ε}) × Γ → 𝒫_fin(Q × Γ*)</em>.</li>
+        <li><strong>q₀:</strong> Estado inicial (<em>q₀ ∈ Q</em>).</li>
+        <li><strong>Z₀:</strong> Símbolo inicial de fondo de pila (<em>Z₀ ∈ Γ</em>).</li>
+        <li><strong>F:</strong> Conjunto de estados de aceptación (<em>F ⊆ Q</em>).</li>
+      </ul>
+    </div>
+    <p>
+      El AFP opera mediante tres acciones primarias sobre la pila: <strong>PUSH</strong> (insertar elementos al tope), <strong>POP</strong> (remover el elemento superior sustituyéndolo por ε), y <strong>NOOP</strong> (mantener el símbolo). Permite validar estructuras balanceadas como llaves <code>{ ... }</code> y gramáticas de la capa de aplicación.
+    </p>
+
+    <h2>1.6 Máquina de Turing (MT — Tipo 0 en la Jerarquía de Chomsky)</h2>
+    <p>
+      La Máquina de Turing es el formalismo cumbre de la teoría de la computación. Cuenta con una cinta de memoria infinita dividida en casillas discretas y un cabezal móvil capaz de leer, escribir y desplazarse a la izquierda (L) o a la derecha (R).
+    </p>
+    <div class="caja-definicion">
+      <span class="tit-def">Definición 5 — Máquina de Turing (MT)</span>
+      <span class="formula-linea">M_MT = (Q, Σ, Γ, δ, q₀, B, F)</span>
+      <ul>
+        <li><strong>Q, Σ, F, q₀:</strong> Estados discretos, alfabeto de entrada, estados finales y estado inicial.</li>
+        <li><strong>Γ:</strong> Alfabeto de la cinta, tal que <em>Σ ⊂ Γ</em>.</li>
+        <li><strong>B:</strong> Símbolo blanco (<em>B ∈ Γ \ Σ</em>), que llena todas las casillas vacías de la cinta.</li>
+        <li><strong>δ:</strong> Función de transición parcial: <em>δ : Q × Γ → Q × Γ × {L, R, S}</em>.</li>
+      </ul>
+    </div>
+    <p>
+      Reconoce los lenguajes recursivamente enumerables y puede computar cualquier función calculable físicamente (Tesis de Church-Turing), modelando en este proyecto el cifrado criptográfico y cálculo universal de la carga útil.
+    </p>
+
+    <div class="salto-pagina"></div>
+
+    <h1>2. Definición de Redes de Petri</h1>
+
+    <h2>2.1 Origen e Intuición</h2>
+    <p>
+      Las Redes de Petri (PN) fueron propuestas por Carl Adam Petri en su tesis doctoral <em>Kommunikation mit Automaten</em> (Universidad de Bonn, 1962). Su propósito explícito fue modelar la causalidad local, los recursos compartidos y la concurrencia verdadera en sistemas distribuidos, superando la limitación de los autómatas secuenciales.
+    </p>
+    <p>
+      Una Red de Petri es un grafo bipartito con dos tipos disjuntos de nodos:
+    </p>
+    <ul>
+      <li><strong>Plazas (P, círculos ○):</strong> Representan condiciones, estados locales, buffers de red o recursos.</li>
+      <li><strong>Transiciones (T, rectángulos □):</strong> Representan eventos activos, transformaciones o acciones.</li>
+      <li><strong>Tokens (marcas •):</strong> Residen en las plazas señalando cuántas instancias de un recurso o condición se encuentran activas en el instante de tiempo.</li>
+    </ul>
+
+    <h2>2.2 Definición Formal</h2>
+    <div class="caja-definicion">
+      <span class="tit-def">Definición 6 — Red de Petri Básica</span>
+      <span class="formula-linea">N = (P, T, F, W, M₀)</span>
+      <ul>
+        <li><strong>P:</strong> Conjunto finito de plazas <em>P = {p₁, p₂, ..., pₙ}</em>.</li>
+        <li><strong>T:</strong> Conjunto finito de transiciones <em>T = {t₁, t₂, ..., tₘ}</em> con <em>P ∩ T = ∅</em>.</li>
+        <li><strong>F:</strong> Relación de flujo dirigida: <em>F ⊆ (P × T) ∪ (T × P)</em>.</li>
+        <li><strong>W:</strong> Función de peso de los arcos: <em>W : F → ℕ⁺</em>.</li>
+        <li><strong>M₀:</strong> Marcado inicial: <em>M₀ : P → ℕ</em>.</li>
+      </ul>
+    </div>
+
+    <h2>2.3 Semántica de Disparo y Arcos Inhibidores</h2>
+    <p>
+      Una transición <em>t</em> está habilitada en el marcado <em>M</em> si todas sus plazas de entrada contienen suficientes tokens:
+    </p>
+    <div class="caja-definicion">
+      <span class="tit-def">Definición 7 — Condición de Habilitación y Nuevo Marcado</span>
+      <span class="formula-linea">t está habilitada en M ⟺ ∀p ∈ •t : M(p) ≥ W(p, t)</span><br>
+      <span class="formula-linea">M'(p) = M(p) − W(p, t) + W(t, p)</span>
+    </div>
+    <p>
+      <strong>Extensión con Arcos Inhibidores:</strong> Se incorpora un arco especial con terminación circular (⊸). La transición solo está habilitada si la plaza inhibidora contiene exactamente cero tokens (<em>M(p_inhibidor) = 0</em>). Esto dota a la Red de Petri de la capacidad de <em>testeo a cero</em>, elevando su poder expresivo al nivel de una Máquina de Turing.
+    </p>
+
+    <h2>2.4 Extensiones de las Redes de Petri</h2>
+    <table class="tabla-academica">
+      <thead>
+        <tr>
+          <th>Extensión</th>
+          <th>Capacidad y Uso Principal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Red de Petri Coloreada (CPN)</strong></td>
+          <td>Los tokens portan tipos de datos («colores»): estructuras, registros y cabeceras de red.</td>
+        </tr>
+        <tr>
+          <td><strong>Red de Petri Temporizada (TPN)</strong></td>
+          <td>Asigna duraciones o intervalos temporales [t_min, t_max] a las transiciones para análisis de rendimiento.</td>
+        </tr>
+        <tr>
+          <td><strong>Red de Petri Estocástica (SPN)</strong></td>
+          <td>Disparos regidos por distribuciones de probabilidad exponencial para fiabilidad de canal.</td>
+        </tr>
+        <tr>
+          <td><strong>Red con Arcos Inhibidores</strong></td>
+          <td>Permite modelar fallos, pérdida de paquetes y comprobación a cero (Turing-completa).</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="salto-pagina"></div>
+
+    <h1>3. Autómatas, Redes de Petri, Pila y Turing Juntos</h1>
+
+    <h2>3.1 La Relación Formal entre los Modelos</h2>
+    <p>
+      Existe una correspondencia teórica rigurosa entre todos los formalismos involucrados en el proyecto:
+    </p>
+    <div class="caja-definicion">
+      <span class="tit-def">Teorema — Equivalencia AFD ↔ Red de Petri Elemental</span>
+      Para todo AFD <em>𝒜 = (Q, Σ, δ, q₀, F)</em> existe una Red de Petri <em>N = (P, T, F_arc, W, M₀)</em> tal que <em>L(𝒜) = L(N)</em>, haciendo <em>P = Q</em>, <em>T = Σ</em> con 1 token inicial en la plaza <em>q₀</em>.
+    </div>
+    <p>
+      La diferencia sustantiva radica en que las Redes de Petri generalizan este principio admitiendo múltiples arcos simultáneos (concurrencia verdadera), mientras que los Autómatas con Pila (Tipo 2) incorporan memoria estructurada LIFO y las Máquinas de Turing (Tipo 0) memoria de acceso irrestricto.
+    </p>
+
+    <h2>3.2 Jerarquía de Chomsky y Cuadro Comparativo Integral</h2>
+    <table class="tabla-academica">
+      <thead>
+        <tr>
+          <th>Criterio</th>
+          <th>AFD (Tipo 3)</th>
+          <th>Red de Petri (N)</th>
+          <th>AFP (Tipo 2)</th>
+          <th>Máquina de Turing (Tipo 0)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Representación de Estado</strong></td>
+          <td>Estado global único.</td>
+          <td>Marcado vectorial distribuido.</td>
+          <td>Par (Estado, Contenido Pila).</td>
+          <td>Configuración (q, Cinta, Cabezal).</td>
+        </tr>
+        <tr>
+          <td><strong>Concurrencia</strong></td>
+          <td>Intercalado (Interleaving).</td>
+          <td>Concurrencia Verdadera.</td>
+          <td>Secuencial estructurado.</td>
+          <td>Cómputo secuencial universal.</td>
+        </tr>
+        <tr>
+          <td><strong>Memoria Auxiliar</strong></td>
+          <td>Finita (acotada en Q).</td>
+          <td>Enteros en plazas.</td>
+          <td>Pila LIFO infinita.</td>
+          <td>Cinta infinita bidireccional.</td>
+        </tr>
+        <tr>
+          <td><strong>Familia de Lenguaje</strong></td>
+          <td>Regulares.</td>
+          <td>Sistemas Concurrentes.</td>
+          <td>Libres de Contexto (CFL).</td>
+          <td>Recursivamente Enumerables.</td>
+        </tr>
+        <tr>
+          <td><strong>Rol en TCP</strong></td>
+          <td>Control de Sesión RFC 793.</td>
+          <td>Canal físico asíncrono.</td>
+          <td>Validador sintáctico L7.</td>
+          <td>Cifrado criptográfico en cinta.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>3.3 El Patrón de Integración Multimodelo</h2>
+    <p>
+      La arquitectura del proyecto integra los cuatro modelos en una co-simulación distribuida sincronizada:
+    </p>
+    <ul>
+      <li><strong>Capa 7 (Criptografía y Cómputo — MT):</strong> Cifra el payload celda a celda en cinta y estampa delimitadores <code>#</code>.</li>
+      <li><strong>Capa 5/6 (Estructuración — AFP):</strong> Valida el balance sintáctico de la trama <code>{ ... }</code> en memoria LIFO.</li>
+      <li><strong>Capa 4 (Sesión — AFD Cliente y Servidor):</strong> Controla los estados del protocolo (CERRADO, SYN-ENV, ESTABLECIDO).</li>
+      <li><strong>Canal Físico (Concurrencia — Red de Petri):</strong> Conduce los tokens asíncronamente a través de buffers y plazas con arcos de pérdida.</li>
+    </ul>
+
+    <div class="salto-pagina"></div>
+
+    <h1>4. Para Qué Sirven y Su Importancia Industrial</h1>
+
+    <h2>4.1 Propósito Individual y Conjunto</h2>
+    <p>
+      Los <strong>Autómatas Finitos</strong> son indispensables para especificar la lógica secuencial reactiva de controladores y protocolos. Las <strong>Redes de Petri</strong> permiten analizar buffers acotados, cuellos de botella y exclusión mutua sin explosión combinatoria. El <strong>Autómata con Pila</strong> asegura la integridad de formatos anidados (JSON, XML, llamadas a funciones), y la <strong>Máquina de Turing</strong> provee las bases de la decidibilidad y algoritmos criptográficos.
+    </p>
+    <p>
+      <strong>Importancia Conjunta e Impacto Industrial:</strong> Normas internacionales de seguridad funcional como la <strong>IEC 61508</strong> y la <strong>IEC 61511</strong> obligan a la verificación formal del software crítico (aeronáutica, plantas nucleares, transporte ferroviario). La convergencia de estos modelos garantiza matemáticamente que el sistema jamás entra en interbloqueo y preserva la consistencia de los datos transmitidos.
+    </p>
+
+    <h1>5. Por Qué Es Necesario Combinarlos</h1>
+
+    <h2>5.1 El Problema de la Explosión de Estados</h2>
+    <p>
+      En un sistema con <em>n</em> subsistemas concurrentes, teniendo cada uno <em>k</em> estados locales, el autómata global cartesiano requiere:
+    </p>
+    <div class="caja-definicion">
+      <span class="tit-def">Complejidad Exponencial del Autómata Global</span>
+      <span class="formula-linea">|Q_global| = k^n</span><br>
+      Para <em>n = 10</em> componentes con <em>k = 3</em> estados se originan <strong>59.049 estados</strong>. Para <em>n = 20</em>, la cifra sobrepasa los <strong>3.486 millones de estados</strong>, volviéndose intratable.
+    </div>
+    <p>
+      Una Red de Petri desacopla este fenómeno representando el sistema con sólo <em>n</em> plazas y tokens locales. Al sumar el AFP y la MT, cada nivel procesa su dimensión correspondiente (control, concurrencia, sintaxis y cómputo) sin multiplicar artificialmente los estados.
+    </p>
+
+    <h1>6. Panorama de Aplicaciones Combinadas</h1>
+    <table class="tabla-academica">
+      <thead>
+        <tr>
+          <th>Dominio</th>
+          <th>Papel del AFD</th>
+          <th>Papel de la Red de Petri</th>
+          <th>Papel del AFP / MT</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Protocolos de Red</strong></td>
+          <td>Control de estados de conexión (RFC 793).</td>
+          <td>Buffers de red, pérdidas y retransmisiones.</td>
+          <td>AFP valida tramas; MT cifra paquetes.</td>
+        </tr>
+        <tr>
+          <td><strong>Dispositivos Médicos</strong></td>
+          <td>Modos de operación (Sueño, Terapia).</td>
+          <td>Monitorización multicanal concurrente.</td>
+          <td>AFP procesa secuencias ECG anidadas.</td>
+        </tr>
+        <tr>
+          <td><strong>Vehículos Autónomos</strong></td>
+          <td>Modos: Crucero, Frenado, Emergencia.</td>
+          <td>Coordinación de actuadores concurrentes.</td>
+          <td>MT computa trayectoria óptima.</td>
+        </tr>
+        <tr>
+          <td><strong>Robótica Multi-Agente</strong></td>
+          <td>Fases de tarea (Idle, Mover, Ensamblar).</td>
+          <td>Sincronización de zonas compartidas.</td>
+          <td>AFP gestiona pila de subrutinas.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="salto-pagina"></div>
+
+    <h1>7. Aplicación Seleccionada: Protocolo TCP Multimodelo</h1>
+
+    <h2>7.1 Justificación de la Selección</h2>
+    <p>
+      El protocolo TCP es el estándar de transporte de Internet por excelencia. Combina entidades con estados secuenciales claros (Cliente/Servidor), un canal asíncrono no confiable con pérdida de paquetes, la necesidad de parsear cargas útiles estructuradas y el requerimiento de cómputo seguro de extremo a extremo.
+    </p>
+
+    <h2>7.2 Formalización de los Componentes</h2>
+
+    <h3>A. FSM Cliente (AFD: A_C)</h3>
+    <div class="caja-definicion">
+      <span class="formula-linea">A_C = ({CERRADO, SYN-ENV, ESTAB, FIN-ESP}, Σ, δ_C, CERRADO, {ESTAB})</span>
+    </div>
+    <table class="tabla-academica">
+      <thead>
+        <tr>
+          <th>Estado Actual</th>
+          <th>Evento / Símbolo</th>
+          <th>Siguiente Estado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>CERRADO</td><td>iniciar_conexion</td><td>SYN-ENVIADO</td><td>Enviar SYN al canal</td></tr>
+        <tr><td>SYN-ENVIADO</td><td>rcv_SYN-ACK</td><td>ESTABLECIDO</td><td>Enviar ACK final</td></tr>
+        <tr><td>SYN-ENVIADO</td><td>timeout</td><td>CERRADO</td><td>Retransmitir / abortar</td></tr>
+        <tr><td>ESTABLECIDO</td><td>iniciar_cierre</td><td>FIN-ESPERA</td><td>Enviar FIN</td></tr>
+      </tbody>
+    </table>
+
+    <h3>B. FSM Servidor (AFD: A_S)</h3>
+    <div class="caja-definicion">
+      <span class="formula-linea">A_S = ({ESCUCHA, SYN-REC, ESTAB, CERRANDO}, Σ, δ_S, ESCUCHA, {ESTAB})</span>
+    </div>
+    <table class="tabla-academica">
+      <thead>
+        <tr>
+          <th>Estado Actual</th>
+          <th>Evento / Símbolo</th>
+          <th>Siguiente Estado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>ESCUCHA</td><td>rcv_SYN</td><td>SYN-RECIBIDO</td><td>Enviar SYN-ACK</td></tr>
+        <tr><td>ESCUCHA</td><td>rcv_SYN (modo OFF)</td><td>ESCUCHA</td><td>Enviar RST</td></tr>
+        <tr><td>SYN-RECIBIDO</td><td>rcv_ACK</td><td>ESTABLECIDO</td><td>Conexión activa</td></tr>
+        <tr><td>SYN-RECIBIDO</td><td>timeout_srv</td><td>ESCUCHA</td><td>Descartar sesión</td></tr>
+      </tbody>
+    </table>
+
+    <h3>C. Red de Petri del Canal (N_canal)</h3>
+    <div class="caja-definicion">
+      <span class="formula-linea">N_canal = (P, T, F, W, M₀)</span><br>
+      Plazas: <em>P = {p_buf_C, p_SYN, p_buf_S, p_SYNACK, p_buf_C2, p_ACK, p_perdido}</em>.<br>
+      Transiciones: <em>T = {env_SYN, ent_SYN, env_SYNACK, ent_SYNACK, env_ACK, ent_ACK}</em>.<br>
+      Arco Inhibidor: <em>p_perdido ⊸ ent_SYN</em>. Si <em>M(p_perdido) ≥ 1</em>, ent_SYN se bloquea.
+    </div>
+
+    <h3>D. Autómata con Pila de la Capa de Aplicación (M_AFP)</h3>
+    <div class="caja-definicion">
+      <span class="formula-linea">M_AFP = (Q_P, Σ_P, Γ, δ_P, q₀, Z₀, {q_acc})</span><br>
+      Valida delimitadores balanceados del stream: <em>L = { {ⁿ w }ⁿ | n ≥ 1 }</em>.<br>
+      Transiciones: <em>δ(q₀, "{", Z₀) = (q₁, "{Z₀}")</em> [PUSH] &nbsp;|&nbsp; <em>δ(q₂, "}", "{") = (q_acc, "Z₀")</em> [POP y Aceptación].
+    </div>
+
+    <h3>E. Máquina de Turing de Cómputo y Cifrado (M_MT)</h3>
+    <div class="caja-definicion">
+      <span class="formula-linea">M_MT = (Q_MT, Σ_MT, Γ_cinta, δ_MT, q₀, B, {q_halt})</span><br>
+      Transforma la cabecera en cinta celda a celda: <em>S → S*</em>, <em>Y → Y*</em>, <em>N → N*</em> y sella delimitadores <code>#</code> hasta alcanzar <em>q_halt</em>.
+    </div>
+
+    <div class="salto-pagina"></div>
+
+    <h2>7.3 Propiedades Verificables del Ecosistema Multimodelo</h2>
+    <table class="tabla-academica">
+      <thead>
+        <tr>
+          <th>Propiedad Formal</th>
+          <th>Fórmula Matemática</th>
+          <th>Interpretación en el Protocolo</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Ausencia de Deadlock</strong></td>
+          <td>¬∃M : ∀t ∈ T, t no habilitada</td>
+          <td>Ningún segmento queda atrapado en el canal sin progresar o abortar con RST/Timeout.</td>
+          <td>Verificable</td>
+        </tr>
+        <tr>
+          <td><strong>Acotación (k-Boundedness)</strong></td>
+          <td>∃k : M(p) ≤ k, ∀M alcanzable</td>
+          <td>Los buffers de red no desbordan; no hay acumulación infinita de tokens (k=1).</td>
+          <td>Verificable</td>
+        </tr>
+        <tr>
+          <td><strong>Vivacidad (Liveness)</strong></td>
+          <td>∀t ∈ T, ∀M, ∃σ : t habilitada</td>
+          <td>Cada transición puede volver a dispararse en conexiones futuras.</td>
+          <td>Verificable</td>
+        </tr>
+        <tr>
+          <td><strong>Alcanzabilidad ESTABLECIDO</strong></td>
+          <td>E&lt;&gt; (A_C = ESTAB ∧ A_S = ESTAB)</td>
+          <td>Existe al menos una traza válida de ejecución que conduce a la conexión mutua activa.</td>
+          <td>UPPAAL ✓</td>
+        </tr>
+        <tr>
+          <td><strong>Parsing Lineal del AFP</strong></td>
+          <td>|δ(q, a, X)| + |δ(q, ε, X)| ≤ 1</td>
+          <td>El análisis sintáctico de la trama de aplicación se efectúa en tiempo lineal estricto O(n).</td>
+          <td>Verificable</td>
+        </tr>
+        <tr>
+          <td><strong>Parada de la MT</strong></td>
+          <td>∀w, (q₀, w) ⊢* (q_halt, u α v)</td>
+          <td>Para tramas de longitud acotada por MTU, la MT alcanza siempre su estado de parada final.</td>
+          <td>Decidible</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>7.4 Dinámica de Ejecución Simultánea de los Escenarios</h2>
+    <p>
+      El simulador implementa cinco escenarios exhaustivos que ponen en marcha los cuatro modelos concurrentemente:
+    </p>
+    <ol>
+      <li><strong>Handshake Normal:</strong> En 7 pasos, Cliente y Servidor transicionan a <em>ESTABLECIDO</em>, la Red de Petri traslada los tokens, el AFP apila <code>{</code> y desapila <code>}</code> alcanzando <em>q_acc</em> con pila en <em>Z₀</em>, y la MT cifra la cabecera alcanzando <em>q_halt</em>.</li>
+      <li><strong>Pérdida de Paquete:</strong> La plaza <em>p_perdido</em> inhibe la entrega del SYN; la MT detiene el cabezal en <em>q_wait</em> y el AFP ejecuta un vaciado de emergencia de la pila tras el timeout del cliente, reanudando la retransmisión.</li>
+      <li><strong>Rechazo por Servidor Inactivo (RST):</strong> El servidor OFF emite RST; la MT escribe <code>[!RST!]</code> en cinta saltando a <em>q_abort</em> y el AFP restablece la pila a <em>Z₀</em> sin interbloqueo.</li>
+      <li><strong>Apertura Simultánea (RFC 793):</strong> Ambos extremos envían SYN a la vez; la Red de Petri procesa tokens cruzados, el AFP gestiona una pila dual de control y la MT sincroniza la cinta para converger ambos nodos en <em>ESTABLECIDO</em>.</li>
+      <li><strong>Flujo Masivo de N Paquetes (Auto-Play):</strong> Transmisión cíclica continua donde la MT procesa bytes en cinta a velocidades configurables (1x a 5x) mientras el AFP apila y desapila ráfagas de datos concurrentes.</li>
+    </ol>
+
+    <div class="salto-pagina"></div>
+
+    <h1>8. Diagrama del Modelo Utilizado</h1>
+    <p class="sin-sangria">
+      A continuación se presenta el esquema estructural del simulador interactivo, exhibiendo el FSM Cliente (AFD), la Red de Petri del canal central con arco inhibidor y el FSM Servidor (AFD):
+    </p>
+
+    <div class="diagrama-contenedor">
+      <svg viewBox="0 0 1000 480" width="950" height="460" xmlns="http://www.w3.org/2000/svg" font-family="Courier New, monospace">
+        <rect width="1000" height="480" fill="#080e18" rx="8"/>
+        <!-- Zonas -->
+        <rect x="15" y="30" width="180" height="430" rx="6" fill="#0f172a" stroke="#388bfd" stroke-width="1.2"/>
+        <rect x="210" y="30" width="580" height="430" rx="6" fill="#0f172a" stroke="#d29922" stroke-width="1.2"/>
+        <rect x="805" y="30" width="180" height="430" rx="6" fill="#0f172a" stroke="#3fb950" stroke-width="1.2"/>
+        
+        <text x="105" y="22" fill="#388bfd" font-weight="bold" font-size="12" text-anchor="middle">FSM CLIENTE (AFD)</text>
+        <text x="500" y="22" fill="#d29922" font-weight="bold" font-size="12" text-anchor="middle">CANAL — RED DE PETRI (N_canal)</text>
+        <text x="895" y="22" fill="#3fb950" font-weight="bold" font-size="12" text-anchor="middle">FSM SERVIDOR (AFD)</text>
+
+        <!-- Nodos Cliente -->
+        <circle cx="105" cy="80" r="24" fill="#080e18" stroke="#388bfd" stroke-width="2"/>
+        <text x="105" y="84" fill="#fff" font-size="8" text-anchor="middle">CERRADO</text>
+        <circle cx="105" cy="180" r="24" fill="#080e18" stroke="#388bfd" stroke-width="2"/>
+        <text x="105" y="184" fill="#fff" font-size="8" text-anchor="middle">SYN-ENV</text>
+        <circle cx="105" cy="290" r="26" fill="#080e18" stroke="#388bfd" stroke-width="2"/>
+        <circle cx="105" cy="290" r="20" fill="none" stroke="#388bfd" stroke-width="1"/>
+        <text x="105" y="294" fill="#fff" font-size="8" text-anchor="middle">ESTABLECIDO</text>
+        <circle cx="105" cy="400" r="24" fill="#080e18" stroke="#388bfd" stroke-width="2"/>
+        <text x="105" y="404" fill="#fff" font-size="8" text-anchor="middle">FIN-ESP</text>
+
+        <!-- Nodos Servidor -->
+        <circle cx="895" cy="80" r="24" fill="#080e18" stroke="#3fb950" stroke-width="2"/>
+        <text x="895" y="84" fill="#fff" font-size="8" text-anchor="middle">ESCUCHA</text>
+        <circle cx="895" cy="190" r="24" fill="#080e18" stroke="#3fb950" stroke-width="2"/>
+        <text x="895" y="194" fill="#fff" font-size="8" text-anchor="middle">SYN-REC</text>
+        <circle cx="895" cy="300" r="26" fill="#080e18" stroke="#3fb950" stroke-width="2"/>
+        <circle cx="895" cy="300" r="20" fill="none" stroke="#3fb950" stroke-width="1"/>
+        <text x="895" y="304" fill="#fff" font-size="8" text-anchor="middle">ESTABLECIDO</text>
+        <circle cx="895" cy="400" r="24" fill="#080e18" stroke="#3fb950" stroke-width="2"/>
+        <text x="895" y="404" fill="#fff" font-size="8" text-anchor="middle">CERRANDO</text>
+
+        <!-- Red de Petri Central -->
+        <!-- Fila 1: SYN -->
+        <circle cx="280" cy="80" r="18" fill="#080e18" stroke="#d29922" stroke-width="1.8"/>
+        <text x="280" y="110" fill="#d29922" font-size="9" text-anchor="middle">p_buf_C</text>
+        <rect x="360" y="70" width="55" height="20" rx="3" fill="#1e2a1e" stroke="#d29922" stroke-width="1.5"/>
+        <text x="387" y="84" fill="#d29922" font-size="8" font-weight="bold" text-anchor="middle">env_SYN</text>
+        <circle cx="480" cy="80" r="18" fill="#080e18" stroke="#d29922" stroke-width="1.8"/>
+        <text x="480" y="110" fill="#d29922" font-size="9" text-anchor="middle">p_SYN</text>
+        <rect x="560" y="70" width="55" height="20" rx="3" fill="#1e2a1e" stroke="#d29922" stroke-width="1.5"/>
+        <text x="587" y="84" fill="#d29922" font-size="8" font-weight="bold" text-anchor="middle">ent_SYN</text>
+        <circle cx="680" cy="80" r="18" fill="#080e18" stroke="#d29922" stroke-width="1.8"/>
+        <text x="680" y="110" fill="#d29922" font-size="9" text-anchor="middle">p_buf_S</text>
+
+        <!-- Fila 2: SYNACK -->
+        <circle cx="580" cy="200" r="18" fill="#080e18" stroke="#d29922" stroke-width="1.8"/>
+        <text x="580" y="230" fill="#d29922" font-size="9" text-anchor="middle">p_SYNACK</text>
+        <rect x="670" y="190" width="65" height="20" rx="3" fill="#1e2a1e" stroke="#d29922" stroke-width="1.5"/>
+        <text x="702" y="204" fill="#d29922" font-size="8" font-weight="bold" text-anchor="middle">env_SYNACK</text>
+        <rect x="420" y="190" width="65" height="20" rx="3" fill="#1e2a1e" stroke="#d29922" stroke-width="1.5"/>
+        <text x="452" y="204" fill="#d29922" font-size="8" font-weight="bold" text-anchor="middle">ent_SYNACK</text>
+        <circle cx="320" cy="200" r="18" fill="#080e18" stroke="#d29922" stroke-width="1.8"/>
+        <text x="320" y="230" fill="#d29922" font-size="9" text-anchor="middle">p_buf_C₂</text>
+
+        <!-- Fila 3: ACK -->
+        <circle cx="480" cy="300" r="18" fill="#080e18" stroke="#d29922" stroke-width="1.8"/>
+        <text x="480" y="330" fill="#d29922" font-size="9" text-anchor="middle">p_ACK</text>
+        <rect x="360" y="290" width="55" height="20" rx="3" fill="#1e2a1e" stroke="#d29922" stroke-width="1.5"/>
+        <text x="387" y="304" fill="#d29922" font-size="8" font-weight="bold" text-anchor="middle">env_ACK</text>
+        <rect x="560" y="290" width="55" height="20" rx="3" fill="#1e2a1e" stroke="#d29922" stroke-width="1.5"/>
+        <text x="587" y="304" fill="#d29922" font-size="8" font-weight="bold" text-anchor="middle">ent_ACK</text>
+
+        <!-- Plaza Inhibidora de Pérdida -->
+        <circle cx="480" cy="410" r="16" fill="#080e18" stroke="#f85149" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="480" y="438" fill="#f85149" font-size="9" text-anchor="middle">p_perdido</text>
+        <!-- Arco Inhibidor -->
+        <path d="M 480,394 Q 480,260 587,95" fill="none" stroke="#f85149" stroke-width="1.2" stroke-dasharray="4,3"/>
+        <circle cx="587" cy="95" r="3.5" fill="none" stroke="#f85149" stroke-width="1.2"/>
+        <text x="535" y="240" fill="#f85149" font-size="8" transform="rotate(-70 535 240)">inhibidor</text>
+
+        <!-- Conexiones principales -->
+        <line x1="298" y1="80" x2="360" y2="80" stroke="#d29922" stroke-width="1.2"/>
+        <line x1="415" y1="80" x2="462" y2="80" stroke="#d29922" stroke-width="1.2"/>
+        <line x1="498" y1="80" x2="560" y2="80" stroke="#d29922" stroke-width="1.2"/>
+        <line x1="615" y1="80" x2="662" y2="80" stroke="#d29922" stroke-width="1.2"/>
+
+        <line x1="670" y1="200" x2="598" y2="200" stroke="#d29922" stroke-width="1.2"/>
+        <line x1="562" y1="200" x2="485" y2="200" stroke="#d29922" stroke-width="1.2"/>
+        <line x1="420" y1="200" x2="338" y2="200" stroke="#d29922" stroke-width="1.2"/>
+
+        <line x1="415" y1="300" x2="462" y2="300" stroke="#d29922" stroke-width="1.2"/>
+        <line x1="498" y1="300" x2="560" y2="300" stroke="#d29922" stroke-width="1.2"/>
+
+        <!-- Integración FSM a Petri -->
+        <line x1="129" y1="80" x2="262" y2="80" stroke="#bc8cff" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="698" y1="80" x2="871" y2="80" stroke="#bc8cff" stroke-width="1" stroke-dasharray="4,3"/>
+      </svg>
+    </div>
+
+    <h1>9. Glosario de Términos Técnicos</h1>
+    <table class="tabla-academica">
+      <thead>
+        <tr>
+          <th>Término</th>
+          <th>Definición Formal en el Contexto del Proyecto</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Alfabeto (Σ)</strong></td>
+          <td>Conjunto finito de símbolos sobre los que opera un autómata formal. En TCP: {SYN, SYN-ACK, ACK, FIN, RST}.</td>
+        </tr>
+        <tr>
+          <td><strong>Arco Inhibidor</strong></td>
+          <td>Restricción en Red de Petri que bloquea el disparo de una transición cuando la plaza origen contiene tokens.</td>
+        </tr>
+        <tr>
+          <td><strong>Autómata con Pila (AFP)</strong></td>
+          <td>Máquina abstracta con memoria LIFO que reconoce lenguajes libres de contexto (CFL) y valida tramas balanceadas.</td>
+        </tr>
+        <tr>
+          <td><strong>Boundedness (Acotación)</strong></td>
+          <td>Propiedad que garantiza la existencia de un entero <em>k</em> tal que <em>M(p) ≤ k</em> para toda plaza en cualquier marcado alcanzable.</td>
+        </tr>
+        <tr>
+          <td><strong>Cabezal de Turing</strong></td>
+          <td>Puntero móvil que lee, escribe y se desplaza (L/R) sobre las celdas de una cinta infinita.</td>
+        </tr>
+        <tr>
+          <td><strong>Deadlock (Interbloqueo)</strong></td>
+          <td>Marcado donde ninguna transición está habilitada y el sistema no ha terminado su objetivo. Estado indeseable.</td>
+        </tr>
+        <tr>
+          <td><strong>Fondo de Pila (Z₀)</strong></td>
+          <td>Símbolo base de control que delimita la estructura LIFO en el Autómata con Pila advirtiendo su vaciado.</td>
+        </tr>
+        <tr>
+          <td><strong>Interleaving</strong></td>
+          <td>Semántica donde las transiciones concurrentes se simulan alternando su ejecución de forma secuencial.</td>
+        </tr>
+        <tr>
+          <td><strong>Jerarquía de Chomsky</strong></td>
+          <td>Clasificación jerárquica de lenguajes y autómatas en 4 niveles: Tipo 3 (AFD), Tipo 2 (AFP), Tipo 1 y Tipo 0 (MT).</td>
+        </tr>
+        <tr>
+          <td><strong>Liveness (Vivacidad)</strong></td>
+          <td>Propiedad formal que garantiza que ninguna transición queda permanentemente deshabilitada.</td>
+        </tr>
+        <tr>
+          <td><strong>Máquina de Turing (MT)</strong></td>
+          <td>Modelo formal de cómputo universal capaz de transformar cadenas sobre una cinta infinita de lectura y escritura.</td>
+        </tr>
+        <tr>
+          <td><strong>Marcado (M)</strong></td>
+          <td>Función vectorial que asigna el número instantáneo de tokens a cada plaza de la Red de Petri.</td>
+        </tr>
+        <tr>
+          <td><strong>True Concurrency</strong></td>
+          <td>Semántica donde múltiples transiciones se disparan realmente en paralelo si sus conjuntos de entrada son disjuntos.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="salto-pagina"></div>
+
+    <h1>10. Referencias Bibliográficas</h1>
+    <div class="referencias-lista">
+      <p>Alur, R., & Dill, D. L. (1994). A theory of timed automata. <em>Theoretical Computer Science</em>, 126(2), 183–235. https://doi.org/10.1016/0304-3975(94)90010-8</p>
+      <p>Chomsky, N. (1956). Three models for the description of language. <em>IRE Transactions on Information Theory</em>, 2(3), 113–124.</p>
+      <p>Hopcroft, J. E., Motwani, R., & Ullman, J. D. (2001). <em>Introduction to Automata Theory, Languages, and Computation</em> (2nd ed.). Addison-Wesley.</p>
+      <p>International Electrotechnical Commission. (2010). <em>IEC 61508: Functional safety of electrical/electronic/programmable electronic safety-related systems</em> (Standard No. IEC 61508:2010). IEC.</p>
+      <p>Jensen, K., & Kristensen, L. M. (2009). <em>Coloured Petri nets: Modelling and validation of concurrent systems</em>. Springer-Verlag.</p>
+      <p>Kleene, S. C. (1951). Representation of events in nerve nets and finite automata. <em>RAND Corporation Research Memorandum</em>.</p>
+      <p>Murata, T. (1989). Petri nets: Properties, analysis and applications. <em>Proceedings of the IEEE</em>, 77(4), 541–580. https://doi.org/10.1109/5.24143</p>
+      <p>Petri, C. A. (1962). <em>Kommunikation mit Automaten</em> (Doctoral dissertation). Universität Bonn.</p>
+      <p>Postel, J. (1981). <em>Transmission Control Protocol (RFC 793)</em>. Internet Engineering Task Force. https://doi.org/10.17487/RFC0793</p>
+      <p>Rabin, M. O., & Scott, D. (1959). Finite automata and their decision problems. <em>IBM Journal of Research and Development</em>, 3(2), 114–125.</p>
+      <p>Ramadge, P. J. G., & Wonham, W. M. (1987). Supervisory control of a class of discrete event processes. <em>SIAM Journal on Control and Optimization</em>, 25(1), 206–230. https://doi.org/10.1137/0325013</p>
+      <p>Turing, A. M. (1936). On computable numbers, with an application to the Entscheidungsproblem. <em>Proceedings of the London Mathematical Society</em>, 42(2), 230–265.</p>
+      <p>Zaitsev, D. A. (2013). <em>Clans of Petri nets: Verification of protocols and performance evaluation of networks</em>. LAP Lambert Academic Publishing.</p>
+    </div>
+
+  </div>
+
+</body>
+</html>
